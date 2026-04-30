@@ -32,7 +32,8 @@ export default async function handler(req, res) {
           { role: 'system', content: systemPrompt },
           { role: 'user', content: question }
         ],
-        max_tokens: 1000
+        max_tokens: 1000,
+        temperature: 0.1
       })
     });
 
