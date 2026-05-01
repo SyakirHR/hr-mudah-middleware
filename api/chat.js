@@ -639,10 +639,33 @@ TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
       .replace(/\*\*EXPLANATION\*\*/g,     `<b style="${headerStyle}">EXPLANATION</b>`)
       .replace(/\*\*REFERENCE\*\*/g,       `<b style="${headerStyle}">REFERENCE</b>`);
 
+    // Step 1: Remove blank lines immediately after section markers (before <br> conversion)
+    // This strips \n or \n\n between the marker and its content
+    htmlAnswer = htmlAnswer
+      .replace(/\[JAWAPAN RINGKAS\]\n+/g, '[JAWAPAN RINGKAS]')
+      .replace(/\[PENERANGAN\]\n+/g, '[PENERANGAN]')
+      .replace(/\[RUJUKAN\]\n+/g, '[RUJUKAN]')
+      .replace(/\[DISCLAIMER\]\n+/g, '[DISCLAIMER]')
+      .replace(/\[BRIEF ANSWER\]\n+/g, '[BRIEF ANSWER]')
+      .replace(/\[EXPLANATION\]\n+/g, '[EXPLANATION]')
+      .replace(/\[REFERENCE\]\n+/g, '[REFERENCE]')
+      .replace(/\*\*JAWAPAN RINGKAS\*\*\n+/g, '**JAWAPAN RINGKAS**')
+      .replace(/\*\*PENERANGAN\*\*\n+/g, '**PENERANGAN**')
+      .replace(/\*\*RUJUKAN\*\*\n+/g, '**RUJUKAN**')
+      .replace(/\*\*DISCLAIMER\*\*\n+/g, '**DISCLAIMER**')
+      .replace(/\*\*BRIEF ANSWER\*\*\n+/g, '**BRIEF ANSWER**')
+      .replace(/\*\*EXPLANATION\*\*\n+/g, '**EXPLANATION**')
+      .replace(/\*\*REFERENCE\*\*\n+/g, '**REFERENCE**');
+
+    // Step 2: Convert remaining newlines to <br>
     htmlAnswer = htmlAnswer.replace(/\n/g, '<br>');
-    // Remove ALL <br> immediately after any section header
+
+    // Step 3: Safety — remove any <br> still left after a closing </b> header tag
     htmlAnswer = htmlAnswer.replace(/<\/b>(<br>)*/g, '</b>');
+
+    // Step 4: Collapse 3+ <br> to 2
     htmlAnswer = htmlAnswer.replace(/(<br>){3,}/g, '<br><br>');
+
     if (!htmlAnswer.trim()) { htmlAnswer = rawAnswer.replace(/\n/g, '<br>'); }
 
     const answer = `<div style="font-family: Poppins, sans-serif; font-size: 12px; line-height: 1.5; margin:0; padding:0;">${htmlAnswer}</div>`;
