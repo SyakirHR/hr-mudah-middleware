@@ -640,7 +640,8 @@ TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
       .replace(/\*\*REFERENCE\*\*/g,       `<b style="${headerStyle}">REFERENCE</b>`);
 
     htmlAnswer = htmlAnswer.replace(/\n/g, '<br>');
-    htmlAnswer = htmlAnswer.replace(/<\/b>(<br>)+/g, '</b>');
+    // Remove ALL <br> immediately after any section header
+    htmlAnswer = htmlAnswer.replace(/<\/b>(<br>)*/g, '</b>');
     htmlAnswer = htmlAnswer.replace(/(<br>){3,}/g, '<br><br>');
     if (!htmlAnswer.trim()) { htmlAnswer = rawAnswer.replace(/\n/g, '<br>'); }
 
