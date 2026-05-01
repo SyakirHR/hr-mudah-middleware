@@ -565,13 +565,15 @@ TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
   const mentionsRestDay = ['rest day', 'restday', 'hari rehat'].some(k => questionLower.includes(k));
 
   if (botJustAskedClarification) {
-    const dayType = mentionsRestDay ? 'REST DAY (Section 60 rates apply)'
-                  : mentionsOffDay  ? 'OFF DAY (1.5x hourly rate per hour worked)'
+    const dayType = mentionsRestDay ? 'REST DAY (statutory rest day under Section 59, use Section 60 pay rates)'
+                  : mentionsOffDay  ? 'OFF DAY (company policy day, use 1.5x hourly rate OT calculation)'
                   : 'the day type the user just confirmed';
+
+    const originalQuestion = parsedHistory.length > 0 ? parsedHistory[0].question : '';
 
     messages.push({
       role: 'system',
-      content: `The user is answering your previous clarification question. They confirmed: "${question.trim()}". Treat this as ${dayType}. Now answer the ORIGINAL question from the conversation history using the correct rate. Do NOT explain what rest day or off day means. Do NOT ask again. Calculate and answer directly.`
+      content: `IMPORTANT: The user message "${question.trim()}" is NOT a new question. It is their answer to your clarification. The original question was: "${originalQuestion}". The confirmed day type is: ${dayType}. Now answer the original question directly using the confirmed day type. Do NOT define rest day or off day. Do NOT ask again. Answer immediately.`
     });
 
   } else if (mentionsOffDay && !hasHistory) {
