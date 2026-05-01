@@ -27,7 +27,17 @@ export default async function handler(req, res) {
 
 4. ALWAYS structure EVERY response in this exact format, regardless of language:
 
-   <div style="font-family: Poppins, sans-serif; font-size: 12px; line-height: 1.6;"><b>JAWAPAN RINGKAS</b><br>[A brief 1-3 sentence direct answer to the question]<br><br><b>PENERANGAN</b><br>[A detailed explanation with calculations, examples, or elaboration as needed]<br><br><b>RUJUKAN</b><br>[State the specific section(s) of the Employment Act 1955 or relevant law that applies. Example: Seksyen 60A, Akta Kerja 1955 atau Jadual Pertama, Akta Kerja 1955]<br><br><b>Ini adalah panduan rujukan awal sahaja dan bukan nasihat undang-undang. Jawapan yang tepat bergantung kepada fakta spesifik, kontrak pekerjaan, dan polisi syarikat. Untuk nasihat undang-undang yang tepat, sila rujuk pakar HR atau peguam.</b></div>
+   [JAWAPAN RINGKAS]
+   [A brief 1-3 sentence direct answer to the question]
+
+   [PENERANGAN]
+   [A detailed explanation with calculations, examples, or elaboration as needed]
+
+   [RUJUKAN]
+   [State the specific section(s) of the Employment Act 1955 or relevant law that applies.]
+
+   [DISCLAIMER]
+   Ini adalah panduan rujukan awal sahaja dan bukan nasihat undang-undang. Jawapan yang tepat bergantung kepada fakta spesifik, kontrak pekerjaan, dan polisi syarikat. Untuk nasihat undang-undang yang tepat, sila rujuk pakar HR atau peguam.
 
    IMPORTANT FORMATTING RULES:
    - ALWAYS use exactly these four sections in this order for EVERY response
@@ -590,7 +600,18 @@ TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
       return res.status(500).json({ error: data.error?.message || 'OpenAI error' });
     }
 
-    const answer = data.choices[0].message.content;
+    const rawAnswer = data.choices[0].message.content;
+
+    // Convert section markers to HTML
+    const htmlAnswer = rawAnswer
+      .replace(/\[JAWAPAN RINGKAS\]/g, '<b>JAWAPAN RINGKAS</b>')
+      .replace(/\[PENERANGAN\]/g, '<b>PENERANGAN</b>')
+      .replace(/\[RUJUKAN\]/g, '<b>RUJUKAN</b>')
+      .replace(/\[DISCLAIMER\]/g, '<b>')
+      .replace(/\n/g, '<br>')
+      + (rawAnswer.includes('[DISCLAIMER]') ? '</b>' : '');
+
+    const answer = `<div style="font-family: Poppins, sans-serif; font-size: 12px; line-height: 1.8;">${htmlAnswer}</div>`;
     return res.status(200).json({ answer });
 
   } catch (err) {
