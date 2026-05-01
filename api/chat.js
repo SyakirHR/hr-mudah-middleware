@@ -584,7 +584,7 @@ TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
     // Fresh first message mentioning off day — must ask clarification
     messages.push({
       role: 'system',
-      content: 'INSTRUCTION: The user used the term "off day" which is ambiguous in Malaysia. You MUST ask for clarification before answering. Use the full structured format. Your [JAWAPAN RINGKAS] must be exactly this question: "Boleh sahkan — adakah yang anda maksudkan itu (1) Hari Rehat di bawah Seksyen 59 Akta Kerja 1955, atau (2) Off Day atas polisi syarikat sahaja?" Then add [CHOICES: Hari Rehat (Seksyen 59) | Off Day (Polisi Syarikat)] at the very end after [DISCLAIMER]. Do NOT answer the question yet.'
+      content: 'Perkataan "off day" yang digunakan oleh pengguna adalah tidak jelas — ia boleh bermaksud Hari Rehat (Seksyen 59) atau hari tidak bekerja atas polisi syarikat. Tanya soalan pengesahan ini sebelum menjawab: "Boleh sahkan — adakah yang anda maksudkan itu (1) Hari Rehat di bawah Seksyen 59 Akta Kerja 1955, atau (2) Off Day atas polisi syarikat sahaja?" Letakkan soalan ini dalam [JAWAPAN RINGKAS]. Tambah [CHOICES: Hari Rehat (Seksyen 59) | Off Day (Polisi Syarikat)] selepas [DISCLAIMER]. Jangan jawab soalan asal lagi.'
     });
   } else if (mentionsOffDay && hasHistory && !botJustAskedClarification) {
     // Mentioned off day in a later message but bot did NOT just ask clarification
@@ -598,7 +598,7 @@ TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
     if (!offDayAlreadyConfirmed) {
       messages.push({
         role: 'system',
-        content: 'INSTRUCTION: The user used the term "off day" which is ambiguous in Malaysia. You MUST ask for clarification before answering. Use the full structured format. Your [JAWAPAN RINGKAS] must be exactly this question: "Boleh sahkan — adakah yang anda maksudkan itu (1) Hari Rehat di bawah Seksyen 59 Akta Kerja 1955, atau (2) Off Day atas polisi syarikat sahaja?" Then add [CHOICES: Hari Rehat (Seksyen 59) | Off Day (Polisi Syarikat)] at the very end after [DISCLAIMER]. Do NOT answer the question yet.'
+        content: 'Perkataan "off day" yang digunakan oleh pengguna adalah tidak jelas — ia boleh bermaksud Hari Rehat (Seksyen 59) atau hari tidak bekerja atas polisi syarikat. Tanya soalan pengesahan ini sebelum menjawab: "Boleh sahkan — adakah yang anda maksudkan itu (1) Hari Rehat di bawah Seksyen 59 Akta Kerja 1955, atau (2) Off Day atas polisi syarikat sahaja?" Letakkan soalan ini dalam [JAWAPAN RINGKAS]. Tambah [CHOICES: Hari Rehat (Seksyen 59) | Off Day (Polisi Syarikat)] selepas [DISCLAIMER]. Jangan jawab soalan asal lagi.'
       });
     }
   }
