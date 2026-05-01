@@ -45,8 +45,8 @@ export default async function handler(req, res) {
    - The disclaimer at the bottom is FIXED and must appear exactly as written above
    - If replying in English, translate the section headers using <b>...</b>: <b>BRIEF ANSWER</b>, <b>EXPLANATION</b>, <b>REFERENCE</b>, but keep the disclaimer in Malay
    - Bold the section headers AND the disclaimer using <b>...</b> tags. Do NOT use ** markdown for bold.
-   - Use <br> for line breaks WITHIN a section only. Never use \n newlines — they will not render in HTML.
-   - Do NOT add extra <br> between section headers and their content. The header and its content must follow immediately with only ONE <br> separator.
+   - Use <br> for line breaks WITHIN a section body only (e.g. between bullet points or calculation steps). Never use \n newlines — they will not render in HTML.
+   - CRITICAL: Do NOT put any <br> immediately after a section header tag. Write the header then the content directly with NO line break between them. Example: [JAWAPAN RINGKAS]Ya, Hari Pekerja adalah... — NOT [JAWAPAN RINGKAS]<br>Ya, Hari Pekerja...
    - Do NOT add blank lines or extra spacing between sections. Sections are separated by the middleware automatically.
    - Do NOT wrap the response in any <div> tag. The middleware handles all wrapping.
    - STRICT SCOPE RULE: Answer ONLY what the user asked. Do NOT volunteer extra information. Examples:
@@ -322,7 +322,7 @@ Shift workers may work more than 8 hours/day or 45 hours/week PROVIDED the avera
 Shift workers CANNOT be required to work more than 12 hours in any one day (except emergencies under Section 60A(2)(a)–(e)).
 Example: Week 1: 49 hours | Week 2: 41 hours | Week 3: 45 hours → Average = 45 hours/week (Compliant).
 
---- SECTION 60D: PUBLIC HOLIDAYS (from Employment Act 1955 and Holidays Act 1951) ---
+--- SECTION 60D: PUBLIC HOLIDAYS (from Employment Act 1955 and Holidays Act 1951 / Akta Hari Kelepasan Am 1951) ---
 Every employee is entitled to PAID HOLIDAYS at ordinary rate of pay on:
 (a) 11 GAZETTED public holidays per calendar year, 5 of which MUST be:
    - National Day (Hari Kebangsaan)
@@ -330,10 +330,11 @@ Every employee is entitled to PAID HOLIDAYS at ordinary rate of pay on:
    - Birthday of the Ruler or Yang di-Pertua Negeri of the State where employee wholly or mainly works, OR Federal Territory Day if employee works mainly in the Federal Territory
    - Workers' Day (Hari Pekerja)
    - Malaysia Day
-(b) Any day appointed as a public holiday for that particular year under Section 8 of the Holidays Act 1951 [Act 369] (gazetted by the Federal Minister).
+(b) Any day appointed as a public holiday for that particular year under Section 8 of the Holidays Act 1951 / Akta Hari Kelepasan Am 1951 [Act 369] (gazetted by the Federal Minister).
 
-IMPORTANT — Section 9 of the Holidays Act 1951:
-The State Authority may appoint a day to be observed as a STATE public holiday. The Minister may appoint a day to be observed as a FEDERAL TERRITORY public holiday. However, under the Employment Act 1955, the employer is NOT OBLIGATED to grant employees state public holidays gazetted under Section 9. Only the 11 gazetted public holidays under Section 60D(1)(a) and days under Section 8 of the Holidays Act 1951 are mandatory.
+IMPORTANT — Section 9 of the Holidays Act 1951 / Akta Hari Kelepasan Am 1951:
+The State Authority may appoint a day to be observed as a STATE public holiday. The Minister may appoint a day to be observed as a FEDERAL TERRITORY public holiday. However, under the Employment Act 1955, the employer is NOT OBLIGATED to grant employees state public holidays gazetted under Section 9. Only the 11 gazetted public holidays under Section 60D(1)(a) and days under Section 8 of the Holidays Act 1951 / Akta Hari Kelepasan Am 1951 are mandatory.
+CRITICAL NAMING RULE: The correct Malay name for Holidays Act 1951 is ALWAYS "Akta Hari Kelepasan Am 1951". NEVER use "Akta Cuti Umum 1951" or any other variant. This is a strict rule.
 
 SUBSTITUTION: If a public holiday falls on a rest day OR on another public holiday, the next working day immediately following is a paid holiday in substitution.
 NOTICE: Employer must display conspicuously at workplace before each calendar year a notice specifying the remaining 6 gazetted public holidays. These 6 may be substituted on other days by agreement between employer and employee.
@@ -636,9 +637,9 @@ TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
     // Convert all newlines to <br>
     htmlAnswer = htmlAnswer.replace(/\n/g, '<br>');
 
-    // Remove double (or more) <br> that appear RIGHT AFTER a bold section header
-    // Pattern: </b><br><br>  →  </b><br>
-    htmlAnswer = htmlAnswer.replace(/<\/b>(<br>){2,}/g, '</b><br>');
+    // Remove ALL <br> that appear RIGHT AFTER a bold section header
+    // b is display:block so it already creates a line break — no <br> needed
+    htmlAnswer = htmlAnswer.replace(/<\/b>(<br>)+/g, '</b>');
 
     // Collapse any remaining triple+ <br> sequences down to double (paragraph spacing)
     htmlAnswer = htmlAnswer.replace(/(<br>){3,}/g, '<br><br>');
