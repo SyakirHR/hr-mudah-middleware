@@ -525,12 +525,14 @@ TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
   const isShortReply = wordCount <= 3;
   const isClarificationReply = clarificationKeywords.some(k => question.trim().toLowerCase().includes(k));
 
-  // SMART INJECTION: Always inject context for short replies or clarification keywords
-  // regardless of history - this prevents the bot from re-asking clarification questions
-  if (isShortReply || isClarificationReply) {
+  // SMART INJECTION: Only inject when this is a SHORT reply AND there is history
+  // This means user is replying to a previous clarification question
+  // Do NOT inject for first messages even if they contain clarification keywords
+  const isReplyToHistory = parsedHistory.length > 0 && isShortReply;
+  if (isReplyToHistory) {
     messages.push({ 
       role: 'system', 
-      content: 'IMPORTANT: The user has just answered your clarification question with a short reply. You MUST now proceed to calculate or answer based on their reply. Do NOT ask for clarification again under any circumstances. If they said "off day" or "hari tidak bekerja" — calculate immediately at 1.5x hourly rate per hour worked. If they said "rest day" or "hari rehat" — calculate immediately using Section 60 statutory rest day rates (monthly rate employees: work not exceeding half normal hours = 0.5x ordinary rate of pay; work more than half but not exceeding normal hours = 1x ordinary rate of pay). Use the salary information from the conversation to complete the calculation.' 
+      content: 'IMPORTANT: The user has just answered your clarification question with a short reply. You MUST now proceed to calculate or answer based on their reply. Do NOT ask for clarification again under any circumstances. If they said "off day" or "hari tidak bekerja" — this means company off day, calculate immediately at 1.5x hourly rate per hour worked. If they said "rest day" or "hari rehat" — calculate immediately using Section 60 statutory rest day rates (monthly rate employees: work not exceeding half normal hours = 0.5x ordinary rate of pay; work more than half but not exceeding normal hours = 1x ordinary rate of pay). Use the salary information from the conversation to complete the calculation.' 
     });
   }
 
