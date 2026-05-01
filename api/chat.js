@@ -46,7 +46,7 @@ export default async function handler(req, res) {
    - If replying in English, translate the section headers using <b>...</b>: <b>BRIEF ANSWER</b>, <b>EXPLANATION</b>, <b>REFERENCE</b>, but keep the disclaimer in Malay
    - Bold the section headers AND the disclaimer using <b>...</b> tags. Do NOT use ** markdown for bold.
    - Use <br> for line breaks WITHIN a section body only (e.g. between bullet points or calculation steps). Never use \n newlines — they will not render in HTML.
-   - CRITICAL: Do NOT put any <br> immediately after a section header tag. Write the header then the content directly with NO line break between them. Example: [JAWAPAN RINGKAS]Ya, Hari Pekerja adalah... — NOT [JAWAPAN RINGKAS]<br>Ya, Hari Pekerja...
+   - CRITICAL: Write each section marker and its content on the SAME LINE with NO line break, NO blank line, NO space between them. Example: [JAWAPAN RINGKAS]Ya, Hari Pekerja adalah wajib. — the marker and the first word of content must be on the exact same line. NEVER put \n or a blank line between the marker and the content.
    - Do NOT add blank lines or extra spacing between sections. Sections are separated by the middleware automatically.
    - Do NOT wrap the response in any <div> tag. The middleware handles all wrapping.
    - STRICT SCOPE RULE: Answer ONLY what the user asked. Do NOT volunteer extra information. Examples:
