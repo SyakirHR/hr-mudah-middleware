@@ -530,19 +530,22 @@ TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
   // This prevents the injection from firing on first messages containing clarification keywords
   const questionLower = question.trim().toLowerCase();
   const mentionsOffDay = ['off day', 'offday', 'hari tidak bekerja', 'hari cuti'].some(k => questionLower.includes(k));
-  const mentionsRestDay = ['rest day', 'restday', 'hari rehat'].some(k => questionLower.includes(k));
 
-  if (mentionsOffDay && parsedHistory.length === 0) {
-    // First message mentioning off day — force clarification
+  // Determine if this is a first message or a follow-up
+  // Check both parsedHistory array AND raw history string
+  const hasAnyHistory = parsedHistory.length > 0 || (typeof history === 'string' && history.trim().length > 0);
+
+  if (mentionsOffDay && !hasAnyHistory) {
+    // First message mentioning off day — inject clarification instruction
     messages.push({
       role: 'system',
-      content: 'MANDATORY: The user mentioned "off day". In Malaysia, this term is commonly used interchangeably for both statutory rest day and company off day. You MUST ask the following clarification question before doing any calculation. Do NOT calculate anything yet. Ask: "Sebelum saya kira bayaran, boleh sahkan sama ada hari yang anda maksudkan adalah: (1) Hari Rehat (Rest Day) — hari rehat statutori yang ditetapkan dalam jadual kerja di bawah kontrak perkhidmatan, atau (2) Off Day — hari tidak bekerja tambahan yang diberikan oleh syarikat atas polisi syarikat (contoh: Sabtu dalam minggu kerja 5 hari)? Sila jawab 'rest day' atau 'off day'."'
+      content: 'The user mentioned "off day". In Malaysia this term is used interchangeably. BEFORE calculating, you MUST ask: "Sebelum saya kira bayaran, boleh sahkan sama ada hari yang anda maksudkan adalah: (1) Hari Rehat (Rest Day) — hari rehat statutori di bawah kontrak perkhidmatan, atau (2) Off Day — hari tidak bekerja atas polisi syarikat sahaja? Sila jawab rest day atau off day."'
     });
-  } else if (parsedHistory.length > 0 && isShortReply) {
-    // Follow-up short reply — user is answering clarification question
+  } else if (isShortReply && hasAnyHistory) {
+    // Short reply with history — user answering clarification
     messages.push({ 
       role: 'system', 
-      content: 'IMPORTANT: The user has just answered your previous clarification question. Proceed immediately to calculate. Do NOT ask again. If they said "off day" — company off day, calculate at 1.5x hourly rate per hour worked. If they said "rest day" — statutory rest day, use Section 60 rates: monthly rate employees: work not exceeding half normal hours = 0.5x ordinary rate; work exceeding half but not exceeding normal hours = 1x ordinary rate; work beyond normal hours = 2x hourly rate per OT hour.' 
+      content: 'The user just answered your clarification question. Calculate immediately. Do NOT ask again. If off day: 1.5x hourly rate per hour. If rest day: Section 60 rates apply.' 
     });
   }
 
