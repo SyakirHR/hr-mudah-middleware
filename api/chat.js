@@ -45,9 +45,10 @@ export default async function handler(req, res) {
    - The disclaimer at the bottom is FIXED and must appear exactly as written above
    - If replying in English, translate the section headers using <b>...</b>: <b>BRIEF ANSWER</b>, <b>EXPLANATION</b>, <b>REFERENCE</b>, but keep the disclaimer in Malay
    - Bold the section headers AND the disclaimer using <b>...</b> tags. Do NOT use ** markdown for bold.
-   - Use <br> for ALL line breaks. Never use \n newlines — they will not render in HTML.
-   - Wrap the entire response in <div style="font-family: Poppins, sans-serif; font-size: 12px; line-height: 1.6;">...</div>
-   - Use <br><br> between sections for spacing.
+   - Use <br> for line breaks WITHIN a section only. Never use \n newlines — they will not render in HTML.
+   - Do NOT add extra <br> between section headers and their content. The header and its content must follow immediately with only ONE <br> separator.
+   - Do NOT add blank lines or extra spacing between sections. Sections are separated by the middleware automatically.
+   - Do NOT wrap the response in any <div> tag. The middleware handles all wrapping.
    - STRICT SCOPE RULE: Answer ONLY what the user asked. Do NOT volunteer extra information. Examples:
      * User asks 'wajib ke?' → answer YES or NO and why. Do NOT mention pay rates, upah, or procedures.
      * User asks 'berapa OT?' → calculate OT only. Do NOT mention eligibility rules unless relevant.
@@ -518,16 +519,11 @@ Rest Day work — full 7.5 hours, 2 days: RM69.23 x 1.0 x 2 = RM138.46
 Public Holiday work — full 7.5 hours, 1 day: RM69.23 x 2.0 x 1 = RM138.46
 TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
 
-  // Build messages array with history
-  const messages = [{ role: 'system', content: systemPrompt }];
-
-  // Add conversation history if provided
-  // Handle both array format and Bubble string format: "question:answer | question:answer"
+  // ─── Parse conversation history ───────────────────────────────────────────
   let parsedHistory = [];
   if (history && Array.isArray(history)) {
     parsedHistory = history;
   } else if (history && typeof history === 'string' && history.trim().length > 0) {
-    // Parse Bubble string format using unique separators: "q1[SEP]a1[PAIR]q2[SEP]a2"
     const pairs = history.split('[PAIR]');
     pairs.forEach(pair => {
       const sepIndex = pair.indexOf('[SEP]');
@@ -539,46 +535,69 @@ TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
     });
   }
 
+  // ─── Build messages array ─────────────────────────────────────────────────
+  const messages = [{ role: 'system', content: systemPrompt }];
+
   parsedHistory.forEach(exchange => {
     if (exchange.question) messages.push({ role: 'user', content: exchange.question });
-    if (exchange.answer) messages.push({ role: 'assistant', content: exchange.answer });
+    if (exchange.answer)   messages.push({ role: 'assistant', content: exchange.answer });
   });
 
-  // SMART CONTEXT INJECTION:
-  // If current question is very short (1-3 words), it is likely a reply to a clarification.
-  // Inject an explicit instruction so the AI treats it as an answer, not a new question.
-  const wordCount = question.trim().split(/\s+/).length;
-  const clarificationKeywords = ['rest day', 'off day', 'hari rehat', 'hari tidak bekerja', 'restday', 'offday', 'yes', 'no', 'ya', 'tidak'];
-  const isShortReply = wordCount <= 3;
-  const isClarificationReply = clarificationKeywords.some(k => question.trim().toLowerCase().includes(k));
-
-  // SMART INJECTION: Only inject when parsedHistory has content AND current message is short
-  // parsedHistory.length > 0 means this is a follow-up reply, not a first message
-  // This prevents the injection from firing on first messages containing clarification keywords
+  // ─── Smart injection logic ────────────────────────────────────────────────
   const questionLower = question.trim().toLowerCase();
+  const hasHistory = parsedHistory.length > 0;
+
+  // Detect what the LAST bot message was about
+  const lastBotAnswer = hasHistory
+    ? (parsedHistory[parsedHistory.length - 1]?.answer ?? '').toLowerCase()
+    : '';
+
+  // Did the bot just ask the rest day / off day clarification question?
+  const botJustAskedClarification =
+    lastBotAnswer.includes('rest day') &&
+    lastBotAnswer.includes('off day') &&
+    (lastBotAnswer.includes('sahkan') || lastBotAnswer.includes('confirm') ||
+     lastBotAnswer.includes('maksudkan') || lastBotAnswer.includes('clarif'));
+
   const mentionsOffDay = ['off day', 'offday', 'hari tidak bekerja', 'hari cuti'].some(k => questionLower.includes(k));
+  const mentionsRestDay = ['rest day', 'restday', 'hari rehat'].some(k => questionLower.includes(k));
 
-  // Determine if this is a first message or a follow-up
-  // Check both parsedHistory array AND raw history string
-  const hasAnyHistory = parsedHistory.length > 0 || (typeof history === 'string' && history.trim().length > 0);
-
-  if (mentionsOffDay && !hasAnyHistory) {
-    // First message mentioning off day — inject clarification instruction
+  if (botJustAskedClarification) {
+    // User is ANSWERING the clarification — never ask again, calculate immediately
+    const dayType = mentionsRestDay ? 'REST DAY (Section 60 rates apply)'
+                  : mentionsOffDay  ? 'OFF DAY (1.5x hourly rate per hour worked)'
+                  : 'the day type the user just confirmed';
     messages.push({
       role: 'system',
-      content: 'The user mentioned "off day". In Malaysia this term is used interchangeably. BEFORE calculating, you MUST ask: "Sebelum saya kira bayaran, boleh sahkan sama ada hari yang anda maksudkan adalah: (1) Hari Rehat (Rest Day) — hari rehat statutori di bawah kontrak perkhidmatan, atau (2) Off Day — hari tidak bekerja atas polisi syarikat sahaja? Sila jawab rest day atau off day."'
+      content: `The user is answering your previous clarification question. They confirmed: "${question.trim()}". Treat this as ${dayType}. Calculate immediately using the correct rate. Do NOT ask for clarification again under any circumstances.`
     });
-  } else if (isShortReply && hasAnyHistory) {
-    // Short reply with history — user answering clarification
-    messages.push({ 
-      role: 'system', 
-      content: 'The user just answered your clarification question. Calculate immediately. Do NOT ask again. If off day: 1.5x hourly rate per hour. If rest day: Section 60 rates apply.' 
+  } else if (mentionsOffDay && !hasHistory) {
+    // Fresh first message mentioning off day — must ask clarification
+    messages.push({
+      role: 'system',
+      content: 'The user mentioned "off day" in their first message. You MUST ask ONE clarification question before calculating: is this a statutory rest day (Hari Rehat under Section 59) or a company off day (hari tidak bekerja atas polisi syarikat)? Ask clearly and wait for their answer.'
     });
+  } else if (mentionsOffDay && hasHistory && !botJustAskedClarification) {
+    // Mentioned off day in a later message but bot did NOT just ask clarification
+    // Check history to see if off day type was already established
+    const offDayAlreadyConfirmed = parsedHistory.some(p =>
+      (p.question || '').toLowerCase().includes('rest day') ||
+      (p.question || '').toLowerCase().includes('hari rehat') ||
+      (p.answer  || '').toLowerCase().includes('off day (1.5x') ||
+      (p.answer  || '').toLowerCase().includes('rest day (section 60')
+    );
+    if (!offDayAlreadyConfirmed) {
+      messages.push({
+        role: 'system',
+        content: 'The user mentioned "off day". Before calculating, ask ONE clarification: is this a statutory rest day (Hari Rehat, Section 59) or a company off day (polisi syarikat)? Do not calculate yet.'
+      });
+    }
   }
 
   // Add current question
   messages.push({ role: 'user', content: question });
 
+  // ─── Call OpenAI ──────────────────────────────────────────────────────────
   try {
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -588,30 +607,49 @@ TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
       },
       body: JSON.stringify({
         model: 'gpt-4.1-mini',
-        messages: messages,
+        messages,
         max_tokens: 1000,
         temperature: 0.1
       })
     });
 
     const data = await response.json();
-
     if (!response.ok) {
       return res.status(500).json({ error: data.error?.message || 'OpenAI error' });
     }
 
     const rawAnswer = data.choices[0].message.content;
 
-    // Convert section markers to HTML
-    const htmlAnswer = rawAnswer
+    // ─── Convert to HTML ────────────────────────────────────────────────────
+    // Replace section markers, then fix spacing:
+    // Header <b>TAG</b> followed immediately by content — single <br> only
+    let htmlAnswer = rawAnswer
       .replace(/\[JAWAPAN RINGKAS\]/g, '<b>JAWAPAN RINGKAS</b>')
-      .replace(/\[PENERANGAN\]/g, '<b>PENERANGAN</b>')
-      .replace(/\[RUJUKAN\]/g, '<b>RUJUKAN</b>')
-      .replace(/\[DISCLAIMER\]/g, '<b>')
-      .replace(/\n/g, '<br>')
-      + (rawAnswer.includes('[DISCLAIMER]') ? '</b>' : '');
+      .replace(/\[PENERANGAN\]/g,      '<b>PENERANGAN</b>')
+      .replace(/\[RUJUKAN\]/g,         '<b>RUJUKAN</b>')
+      .replace(/\[DISCLAIMER\]/g,      '<b>DISCLAIMER</b>')
+      // English headers
+      .replace(/\[BRIEF ANSWER\]/g,    '<b>BRIEF ANSWER</b>')
+      .replace(/\[EXPLANATION\]/g,     '<b>EXPLANATION</b>')
+      .replace(/\[REFERENCE\]/g,       '<b>REFERENCE</b>');
 
-    const answer = `<div style="font-family: Poppins, sans-serif; font-size: 12px; line-height: 1.8;">${htmlAnswer}</div>`;
+    // Convert all newlines to <br>
+    htmlAnswer = htmlAnswer.replace(/\n/g, '<br>');
+
+    // Remove double (or more) <br> that appear RIGHT AFTER a bold section header
+    // Pattern: </b><br><br>  →  </b><br>
+    htmlAnswer = htmlAnswer.replace(/<\/b>(<br>){2,}/g, '</b><br>');
+
+    // Collapse any remaining triple+ <br> sequences down to double (paragraph spacing)
+    htmlAnswer = htmlAnswer.replace(/(<br>){3,}/g, '<br><br>');
+
+    // Wrap in container — line-height 1.5 for tighter feel, margin 0 on headers
+    const answer = `<div style="font-family: Poppins, sans-serif; font-size: 12px; line-height: 1.5;">` +
+                   `<style scoped>b{display:block;margin:8px 0 2px 0;}` +
+                   `b:first-child{margin-top:0;}</style>` +
+                   htmlAnswer +
+                   `</div>`;
+
     return res.status(200).json({ answer });
 
   } catch (err) {
