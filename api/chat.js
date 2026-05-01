@@ -46,6 +46,14 @@ export default async function handler(req, res) {
    - If replying in English, translate the section headers using <b>...</b>: <b>BRIEF ANSWER</b>, <b>EXPLANATION</b>, <b>REFERENCE</b>, but keep the disclaimer in Malay
    - Bold the section headers AND the disclaimer using <b>...</b> tags. Do NOT use ** markdown for bold.
    - Use <br> for line breaks WITHIN a section body only (e.g. between bullet points or calculation steps). Never use \n newlines — they will not render in HTML.
+   - CHOICES RULE: When you need clarification from the user, you MUST add a [CHOICES] marker at the very end of your response (after DISCLAIMER) in this exact format:
+     [CHOICES: Option 1 | Option 2 | Option 3]
+     Use this whenever you ask the user to pick between specific options. Examples:
+     * Asking rest day vs off day → [CHOICES: Hari Rehat (Rest Day) | Off Day (Polisi Syarikat)]
+     * Asking years of service → [CHOICES: Kurang 2 tahun | 2-5 tahun | Lebih 5 tahun]
+     * Asking yes/no → [CHOICES: Ya | Tidak]
+     * Asking notice period → [CHOICES: Ada dalam kontrak | Tiada dalam kontrak]
+     Keep each option short (max 5 words). Max 4 options. Only add [CHOICES] when you are asking the user to pick something. Do NOT add [CHOICES] when giving a full answer.
    - CRITICAL: Write each section marker and its content on the SAME LINE with NO line break, NO blank line, NO space between them. Example: [JAWAPAN RINGKAS]Ya, Hari Pekerja adalah wajib. — the marker and the first word of content must be on the exact same line. NEVER put \n or a blank line between the marker and the content.
    - Do NOT add blank lines or extra spacing between sections. Sections are separated by the middleware automatically.
    - Do NOT wrap the response in any <div> tag. The middleware handles all wrapping.
@@ -576,7 +584,7 @@ TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
     // Fresh first message mentioning off day — must ask clarification
     messages.push({
       role: 'system',
-      content: 'The user mentioned "off day" in their first message. You MUST ask ONE short clarification question before answering. Do NOT use the JAWAPAN RINGKAS / PENERANGAN / RUJUKAN / DISCLAIMER format. Just ask directly in 1-2 sentences: is this a statutory rest day (Hari Rehat under Section 59) or a company off day (hari tidak bekerja atas polisi syarikat)? Wait for their answer.'
+      content: 'The user mentioned "off day" in their first message. Ask ONE clarification question using the normal structured format. In [JAWAPAN RINGKAS] ask: "Boleh sahkan — adakah yang anda maksudkan itu Hari Rehat (rest day) di bawah Seksyen 59 Akta Kerja 1955, atau Off Day (hari tidak bekerja atas polisi syarikat)?" Leave [PENERANGAN] blank or with one short explanation of the difference. Leave [RUJUKAN] and [DISCLAIMER] as normal.'
     });
   } else if (mentionsOffDay && hasHistory && !botJustAskedClarification) {
     // Mentioned off day in a later message but bot did NOT just ask clarification
@@ -590,7 +598,7 @@ TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
     if (!offDayAlreadyConfirmed) {
       messages.push({
         role: 'system',
-        content: 'The user mentioned "off day". You MUST ask ONE short clarification question before answering. Do NOT use the JAWAPAN RINGKAS / PENERANGAN / RUJUKAN / DISCLAIMER format for this clarification. Just ask directly in 1-2 sentences: is this a statutory rest day (Hari Rehat under Section 59) or a company off day (hari tidak bekerja atas polisi syarikat)? Wait for their answer before proceeding.'
+        content: 'The user mentioned "off day". Ask ONE clarification question using the normal structured format. In [JAWAPAN RINGKAS] ask: "Boleh sahkan — adakah yang anda maksudkan itu Hari Rehat (rest day) di bawah Seksyen 59 Akta Kerja 1955, atau Off Day (hari tidak bekerja atas polisi syarikat)?" Leave [PENERANGAN] with one short sentence explaining the difference matters. Leave [RUJUKAN] and [DISCLAIMER] as normal.'
       });
     }
   }
@@ -623,25 +631,9 @@ TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
 
     // ─── Convert to HTML ────────────────────────────────────────────────────
     const headerStyle = 'display:block;font-weight:bold;margin:12px 0 0 0;padding:0;line-height:1.5;';
-    let htmlAnswer = rawAnswer
-      .replace(/\[JAWAPAN RINGKAS\]/g, `<b style="${headerStyle}">JAWAPAN RINGKAS</b>`)
-      .replace(/\[PENERANGAN\]/g,      `<b style="${headerStyle}">PENERANGAN</b>`)
-      .replace(/\[RUJUKAN\]/g,         `<b style="${headerStyle}">RUJUKAN</b>`)
-      .replace(/\[DISCLAIMER\]/g,      `<b style="${headerStyle}">DISCLAIMER</b>`)
-      .replace(/\[BRIEF ANSWER\]/g,    `<b style="${headerStyle}">BRIEF ANSWER</b>`)
-      .replace(/\[EXPLANATION\]/g,     `<b style="${headerStyle}">EXPLANATION</b>`)
-      .replace(/\[REFERENCE\]/g,       `<b style="${headerStyle}">REFERENCE</b>`)
-      .replace(/\*\*JAWAPAN RINGKAS\*\*/g, `<b style="${headerStyle}">JAWAPAN RINGKAS</b>`)
-      .replace(/\*\*PENERANGAN\*\*/g,      `<b style="${headerStyle}">PENERANGAN</b>`)
-      .replace(/\*\*RUJUKAN\*\*/g,         `<b style="${headerStyle}">RUJUKAN</b>`)
-      .replace(/\*\*DISCLAIMER\*\*/g,      `<b style="${headerStyle}">DISCLAIMER</b>`)
-      .replace(/\*\*BRIEF ANSWER\*\*/g,    `<b style="${headerStyle}">BRIEF ANSWER</b>`)
-      .replace(/\*\*EXPLANATION\*\*/g,     `<b style="${headerStyle}">EXPLANATION</b>`)
-      .replace(/\*\*REFERENCE\*\*/g,       `<b style="${headerStyle}">REFERENCE</b>`);
 
-    // Step 1: Remove blank lines immediately after section markers (before <br> conversion)
-    // This strips \n or \n\n between the marker and its content
-    htmlAnswer = htmlAnswer
+    // Step 0: Strip \n immediately after markers BEFORE converting markers to HTML
+    let htmlAnswer = rawAnswer
       .replace(/\[JAWAPAN RINGKAS\]\n+/g, '[JAWAPAN RINGKAS]')
       .replace(/\[PENERANGAN\]\n+/g, '[PENERANGAN]')
       .replace(/\[RUJUKAN\]\n+/g, '[RUJUKAN]')
@@ -657,6 +649,23 @@ TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
       .replace(/\*\*EXPLANATION\*\*\n+/g, '**EXPLANATION**')
       .replace(/\*\*REFERENCE\*\*\n+/g, '**REFERENCE**');
 
+    // Step 1: Convert markers to styled HTML headers
+    htmlAnswer = htmlAnswer
+      .replace(/\[JAWAPAN RINGKAS\]/g, `<b style="${headerStyle}">JAWAPAN RINGKAS</b>`)
+      .replace(/\[PENERANGAN\]/g,      `<b style="${headerStyle}">PENERANGAN</b>`)
+      .replace(/\[RUJUKAN\]/g,         `<b style="${headerStyle}">RUJUKAN</b>`)
+      .replace(/\[DISCLAIMER\]/g,      `<b style="${headerStyle}">DISCLAIMER</b>`)
+      .replace(/\[BRIEF ANSWER\]/g,    `<b style="${headerStyle}">BRIEF ANSWER</b>`)
+      .replace(/\[EXPLANATION\]/g,     `<b style="${headerStyle}">EXPLANATION</b>`)
+      .replace(/\[REFERENCE\]/g,       `<b style="${headerStyle}">REFERENCE</b>`)
+      .replace(/\*\*JAWAPAN RINGKAS\*\*/g, `<b style="${headerStyle}">JAWAPAN RINGKAS</b>`)
+      .replace(/\*\*PENERANGAN\*\*/g,      `<b style="${headerStyle}">PENERANGAN</b>`)
+      .replace(/\*\*RUJUKAN\*\*/g,         `<b style="${headerStyle}">RUJUKAN</b>`)
+      .replace(/\*\*DISCLAIMER\*\*/g,      `<b style="${headerStyle}">DISCLAIMER</b>`)
+      .replace(/\*\*BRIEF ANSWER\*\*/g,    `<b style="${headerStyle}">BRIEF ANSWER</b>`)
+      .replace(/\*\*EXPLANATION\*\*/g,     `<b style="${headerStyle}">EXPLANATION</b>`)
+      .replace(/\*\*REFERENCE\*\*/g,       `<b style="${headerStyle}">REFERENCE</b>`);
+
     // Step 2: Convert remaining newlines to <br>
     htmlAnswer = htmlAnswer.replace(/\n/g, '<br>');
 
@@ -670,7 +679,17 @@ TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
 
     const answer = `<div style="font-family: Poppins, sans-serif; font-size: 12px; line-height: 1.5; margin:0; padding:0;">${htmlAnswer}</div>`;
 
-    return res.status(200).json({ answer });
+    // Extract [CHOICES: ...] marker if present
+    const choicesMatch = answer.match(/\[CHOICES:\s*([^\]]+)\]/);
+    let choices = [];
+    let cleanAnswer = answer;
+    if (choicesMatch) {
+      choices = choicesMatch[1].split('|').map(s => s.trim()).filter(Boolean);
+      // Remove the [CHOICES:...] marker from the displayed answer
+      cleanAnswer = answer.replace(/\[CHOICES:\s*[^\]]+\]/, '').replace(/(<br>\s*){2,}$/, '').trim();
+    }
+
+    return res.status(200).json({ answer: cleanAnswer, choices });
 
   } catch (err) {
     return res.status(500).json({ error: err.message });
