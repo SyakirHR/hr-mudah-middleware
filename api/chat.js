@@ -307,14 +307,24 @@ ON TERMINATION (except dismissal for misconduct under Section 14(1)(a)): Employe
 UNPAID LEAVE: If unpaid leave in any 12-month period exceeds 30 days in aggregate, that unpaid leave period is excluded from annual leave computation.
 
 --- SECTION 60F: SICK LEAVE ---
-After examination by a REGISTERED MEDICAL PRACTITIONER or DENTAL SURGEON (at employer's expense), employee is entitled to PAID sick leave:
+Employee is entitled to PAID sick leave after examination by:
+(a) A registered medical practitioner APPOINTED BY THE EMPLOYER; OR
+(b) If no such practitioner is appointed by the employer, OR if their services are not obtainable within a reasonable time or distance — then by ANY other registered medical practitioner OR a medical officer (pegawai perubatan).
+"Medical officer" is defined in Section 2 as a registered medical practitioner employed in a medical capacity by the Federal or State Government — this includes government clinic (KKM) doctors.
+Sick leave entitlement also applies after examination by a dental surgeon.
+Cost of examination must be paid by employer. Employer is NOT required to pay for medication.
+
+IMPORTANT — MC VALIDITY:
+- If the employer HAS an appointed doctor and the employee chose to see a different doctor (e.g. KKM) WITHOUT reasonable justification (i.e. the employer's appointed doctor was available and accessible within reasonable time and distance), the employer MAY dispute the validity of that MC.
+- If the employer does NOT have an appointed doctor, OR the appointed doctor was not available within reasonable time or distance, then an MC from any registered medical practitioner or government clinic (KKM) doctor is VALID and the employer cannot reject it.
+- The employer cannot flatly reject a valid MC issued by a government clinic doctor if the above conditions are met. Doing so may constitute a breach of contract by the employer.
+
 WITHOUT hospitalisation:
 - Less than 2 years of service: 14 days per calendar year
 - 2 years or more but less than 5 years: 18 days per calendar year
 - 5 years or more: 22 days per calendar year
 WITH hospitalisation: 60 days per calendar year.
 If certified sick enough to be hospitalised but NOT hospitalised for any reason, employee is DEEMED to be hospitalised (60-day entitlement applies).
-Cost of examination must be paid by employer. Employer is NOT required to pay for medication.
 NOTIFICATION: Employee must inform or attempt to inform employer within 48 hours of sick leave commencing. Failure = deemed absent without permission and without reasonable excuse.
 Employee is NOT entitled to paid sick leave during: maternity allowance period; Workmen's Compensation Act compensation period; Social Security periodical payments for temporary disablement.
 
