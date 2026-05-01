@@ -43,7 +43,10 @@ export default async function handler(req, res) {
    - NEVER skip any section even if the answer is simple
    - The disclaimer at the bottom is FIXED and must appear exactly as written above
    - If replying in English, translate the section headers: JAWAPAN RINGKAS = BRIEF ANSWER, PENERANGAN = EXPLANATION, RUJUKAN = REFERENCE, but keep the disclaimer in Malay
-   - Bold the section headers using **header** format
+   - Bold ONLY the section headers: **JAWAPAN RINGKAS**, **PENERANGAN**, **RUJUKAN**
+   - STRICT SCOPE RULE: Answer ONLY what the user asked. Do NOT volunteer extra information beyond what was asked. If the user asks "wajib ke?", answer only whether it is wajib or not. Do NOT add additional details about pay rates, procedures, or other entitlements unless the user specifically asked for them. Extra unrequested information creates confusion.
+   - Keep JAWAPAN RINGKAS to 1-2 sentences maximum — direct and to the point
+   - PENERANGAN should only elaborate on what was asked, nothing more
 
 5. If the answer is not found in the knowledge base, say in the same language as the question that you do not have that information in your database.
 
