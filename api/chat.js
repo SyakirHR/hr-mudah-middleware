@@ -584,7 +584,7 @@ TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
     // Fresh first message mentioning off day — must ask clarification
     messages.push({
       role: 'system',
-      content: 'The user mentioned "off day" in their first message. Ask ONE clarification question using the normal structured format. In [JAWAPAN RINGKAS] ask: "Boleh sahkan — adakah yang anda maksudkan itu Hari Rehat (rest day) di bawah Seksyen 59 Akta Kerja 1955, atau Off Day (hari tidak bekerja atas polisi syarikat)?" Leave [PENERANGAN] blank or with one short explanation of the difference. Leave [RUJUKAN] and [DISCLAIMER] as normal.'
+      content: 'INSTRUCTION: The user used the term "off day" which is ambiguous in Malaysia. You MUST ask for clarification before answering. Use the full structured format. Your [JAWAPAN RINGKAS] must be exactly this question: "Boleh sahkan — adakah yang anda maksudkan itu (1) Hari Rehat di bawah Seksyen 59 Akta Kerja 1955, atau (2) Off Day atas polisi syarikat sahaja?" Then add [CHOICES: Hari Rehat (Seksyen 59) | Off Day (Polisi Syarikat)] at the very end after [DISCLAIMER]. Do NOT answer the question yet.'
     });
   } else if (mentionsOffDay && hasHistory && !botJustAskedClarification) {
     // Mentioned off day in a later message but bot did NOT just ask clarification
@@ -598,7 +598,7 @@ TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
     if (!offDayAlreadyConfirmed) {
       messages.push({
         role: 'system',
-        content: 'The user mentioned "off day". Ask ONE clarification question using the normal structured format. In [JAWAPAN RINGKAS] ask: "Boleh sahkan — adakah yang anda maksudkan itu Hari Rehat (rest day) di bawah Seksyen 59 Akta Kerja 1955, atau Off Day (hari tidak bekerja atas polisi syarikat)?" Leave [PENERANGAN] with one short sentence explaining the difference matters. Leave [RUJUKAN] and [DISCLAIMER] as normal.'
+        content: 'INSTRUCTION: The user used the term "off day" which is ambiguous in Malaysia. You MUST ask for clarification before answering. Use the full structured format. Your [JAWAPAN RINGKAS] must be exactly this question: "Boleh sahkan — adakah yang anda maksudkan itu (1) Hari Rehat di bawah Seksyen 59 Akta Kerja 1955, atau (2) Off Day atas polisi syarikat sahaja?" Then add [CHOICES: Hari Rehat (Seksyen 59) | Off Day (Polisi Syarikat)] at the very end after [DISCLAIMER]. Do NOT answer the question yet.'
       });
     }
   }
