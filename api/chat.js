@@ -525,14 +525,14 @@ TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
   const isShortReply = wordCount <= 3;
   const isClarificationReply = clarificationKeywords.some(k => question.trim().toLowerCase().includes(k));
 
-  // SMART INJECTION: Only inject when this is a SHORT reply AND there is history
-  // This means user is replying to a previous clarification question
-  // Do NOT inject for first messages even if they contain clarification keywords
-  const isReplyToHistory = parsedHistory.length > 0 && isShortReply;
-  if (isReplyToHistory) {
+  // SMART INJECTION: Only inject when parsedHistory has content AND current message is short
+  // parsedHistory.length > 0 means this is a follow-up reply, not a first message
+  // This prevents the injection from firing on first messages containing clarification keywords
+  console.log('parsedHistory length:', parsedHistory.length, 'isShortReply:', isShortReply, 'question:', question);
+  if (parsedHistory.length > 0 && isShortReply) {
     messages.push({ 
       role: 'system', 
-      content: 'IMPORTANT: The user has just answered your clarification question with a short reply. You MUST now proceed to calculate or answer based on their reply. Do NOT ask for clarification again under any circumstances. If they said "off day" or "hari tidak bekerja" — this means company off day, calculate immediately at 1.5x hourly rate per hour worked. If they said "rest day" or "hari rehat" — calculate immediately using Section 60 statutory rest day rates (monthly rate employees: work not exceeding half normal hours = 0.5x ordinary rate of pay; work more than half but not exceeding normal hours = 1x ordinary rate of pay). Use the salary information from the conversation to complete the calculation.' 
+      content: 'IMPORTANT: The user has just answered your previous clarification question with a short reply. You MUST now proceed to calculate immediately based on their answer. Do NOT ask for clarification again. If they confirmed "off day" (company policy day) — calculate at 1.5x hourly rate per hour worked. If they confirmed "rest day" (statutory rest day) — use Section 60 rates: monthly rate, work not exceeding half normal hours = 0.5x ordinary rate of pay; work exceeding half but not exceeding normal hours = 1x ordinary rate of pay; work beyond normal hours = 2x hourly rate per OT hour. Use salary information from earlier in the conversation.' 
     });
   }
 
