@@ -280,14 +280,22 @@ Monthly-rate employees are deemed to have received holiday pay if they receive f
 
 PAY FOR WORKING ON PUBLIC HOLIDAY:
 For employees on monthly/weekly/daily/hourly or similar rates:
-- Normal hours: In addition to holiday pay already entitled — 2 days' wages at ordinary rate of pay (regardless of period of work, even if less than normal hours)
-- Overtime (beyond normal hours): not less than 3x hourly rate per hour
+- Normal hours (or any part thereof, even less than normal hours): In addition to holiday pay already entitled — 2 days' wages at ordinary rate of pay. This is a FIXED DAY RATE — it is NOT calculated per hour worked. Whether the employee works 1 hour, 3 hours, or the full 8 hours on a public holiday, the pay is the same: 2x ordinary rate of pay (i.e. 2 x monthly rate / 26).
+- Overtime (hours worked BEYOND normal hours only): not less than 3x hourly rate per hour for each extra hour beyond normal hours.
+
+CRITICAL RULE: NEVER calculate public holiday pay as (hours worked x hourly rate x 2). The 2x multiplier is always applied to the FULL ordinary rate of pay for the day, regardless of actual hours worked within normal hours. Only the overtime portion (beyond normal hours) is calculated on a per-hour basis at 3x hourly rate.
 
 For employees on piece rates:
 - Normal hours: twice the ordinary rate per piece
 - Overtime: not less than 3x ordinary rate per piece
 
-Example:
+Example 1 — Working LESS than normal hours on public holiday:
+Salary: RM3,000/month | Normal hours: 8 hours/day | Worked: 3 hours on public holiday (within normal hours)
+Ordinary rate/day = RM3,000 / 26 = RM115.38
+Payment = RM115.38 x 2.0 = RM230.76
+(NOT 3 hours x RM14.42 x 2 — that would be WRONG)
+
+Example 2 — Working BEYOND normal hours on public holiday:
 Salary: RM3,000/month | Normal hours: 8 hours/day | Worked: 10 hours on public holiday
 Ordinary rate/day = RM3,000 / 26 = RM115.38
 Hourly rate = RM115.38 / 8 = RM14.42
