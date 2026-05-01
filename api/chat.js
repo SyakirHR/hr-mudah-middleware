@@ -494,12 +494,27 @@ TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
   const messages = [{ role: 'system', content: systemPrompt }];
 
   // Add conversation history if provided
+  // Handle both array format and Bubble string format: "question:answer | question:answer"
+  let parsedHistory = [];
   if (history && Array.isArray(history)) {
-    history.forEach(exchange => {
-      if (exchange.question) messages.push({ role: 'user', content: exchange.question });
-      if (exchange.answer) messages.push({ role: 'assistant', content: exchange.answer });
+    parsedHistory = history;
+  } else if (history && typeof history === 'string' && history.trim().length > 0) {
+    // Parse Bubble string format using unique separators: "q1[SEP]a1[PAIR]q2[SEP]a2"
+    const pairs = history.split('[PAIR]');
+    pairs.forEach(pair => {
+      const sepIndex = pair.indexOf('[SEP]');
+      if (sepIndex > -1) {
+        const q = pair.substring(0, sepIndex).trim();
+        const a = pair.substring(sepIndex + 5).trim();
+        if (q && a) parsedHistory.push({ question: q, answer: a });
+      }
     });
   }
+
+  parsedHistory.forEach(exchange => {
+    if (exchange.question) messages.push({ role: 'user', content: exchange.question });
+    if (exchange.answer) messages.push({ role: 'assistant', content: exchange.answer });
+  });
 
   // SMART CONTEXT INJECTION:
   // If current question is very short (1-3 words), it is likely a reply to a clarification.
@@ -509,7 +524,8 @@ TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
   const isShortReply = wordCount <= 3;
   const isClarificationReply = clarificationKeywords.some(k => question.trim().toLowerCase().includes(k));
 
-  if ((isShortReply || isClarificationReply) && history && Array.isArray(history) && history.length > 0) {
+  const hasHistory = parsedHistory.length > 0;
+  if ((isShortReply || isClarificationReply) && hasHistory) {
     // Inject a system-level reminder before the user's short reply
     messages.push({ 
       role: 'system', 
