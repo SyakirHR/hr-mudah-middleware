@@ -314,10 +314,11 @@ Employee is entitled to PAID sick leave after examination by:
 Sick leave entitlement also applies after examination by a dental surgeon.
 Cost of examination must be paid by employer. Employer is NOT required to pay for medication.
 
-IMPORTANT — MC VALIDITY:
-- If the employer HAS an appointed doctor and the employee chose to see a different doctor (e.g. KKM) WITHOUT reasonable justification (i.e. the employer's appointed doctor was available and accessible within reasonable time and distance), the employer MAY dispute the validity of that MC.
-- If the employer does NOT have an appointed doctor, OR the appointed doctor was not available within reasonable time or distance, then an MC from any registered medical practitioner or government clinic (KKM) doctor is VALID and the employer cannot reject it.
-- The employer cannot flatly reject a valid MC issued by a government clinic doctor if the above conditions are met. Doing so may constitute a breach of contract by the employer.
+IMPORTANT — SICK LEAVE ENTITLEMENT AND MC:
+- The question is NOT about whether the MC document is valid or invalid. The question is whether the employee is ENTITLED to paid sick leave under the Act.
+- If the employer HAS an appointed doctor who was available and accessible within reasonable time and distance, and the employee chose to see a different doctor (e.g. KKM) WITHOUT reasonable justification → the employee may NOT be entitled to paid sick leave for that absence. The employee may be treated as absent without permission.
+- If the employer does NOT have an appointed doctor, OR the appointed doctor's services were not obtainable within a reasonable time or distance → the employee is fully ENTITLED to paid sick leave based on the MC from any registered medical practitioner or government clinic (KKM) doctor.
+- If the employee IS entitled to paid sick leave and the employer refuses to pay or recognise the sick leave → this constitutes a perlanggaran peruntukan Akta Kerja 1955 by the employer.
 
 WITHOUT hospitalisation:
 - Less than 2 years of service: 14 days per calendar year
