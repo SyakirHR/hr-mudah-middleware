@@ -576,7 +576,7 @@ TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
     // Fresh first message mentioning off day — must ask clarification
     messages.push({
       role: 'system',
-      content: 'The user mentioned "off day" in their first message. You MUST ask ONE clarification question before calculating: is this a statutory rest day (Hari Rehat under Section 59) or a company off day (hari tidak bekerja atas polisi syarikat)? Ask clearly and wait for their answer.'
+      content: 'The user mentioned "off day" in their first message. You MUST ask ONE short clarification question before answering. Do NOT use the JAWAPAN RINGKAS / PENERANGAN / RUJUKAN / DISCLAIMER format. Just ask directly in 1-2 sentences: is this a statutory rest day (Hari Rehat under Section 59) or a company off day (hari tidak bekerja atas polisi syarikat)? Wait for their answer.'
     });
   } else if (mentionsOffDay && hasHistory && !botJustAskedClarification) {
     // Mentioned off day in a later message but bot did NOT just ask clarification
@@ -590,7 +590,7 @@ TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
     if (!offDayAlreadyConfirmed) {
       messages.push({
         role: 'system',
-        content: 'The user mentioned "off day". Before calculating, ask ONE clarification: is this a statutory rest day (Hari Rehat, Section 59) or a company off day (polisi syarikat)? Do not calculate yet.'
+        content: 'The user mentioned "off day". You MUST ask ONE short clarification question before answering. Do NOT use the JAWAPAN RINGKAS / PENERANGAN / RUJUKAN / DISCLAIMER format for this clarification. Just ask directly in 1-2 sentences: is this a statutory rest day (Hari Rehat under Section 59) or a company off day (hari tidak bekerja atas polisi syarikat)? Wait for their answer before proceeding.'
       });
     }
   }
