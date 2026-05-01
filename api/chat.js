@@ -597,7 +597,12 @@ TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
     }
   }
 
-  messages.push({ role: 'user', content: question });
+  // If bot just asked clarification, send original question instead of the choice text
+  if (botJustAskedClarification && parsedHistory.length > 0) {
+    messages.push({ role: 'user', content: parsedHistory[0].question });
+  } else {
+    messages.push({ role: 'user', content: question });
+  }
 
   // ─── OpenAI call ─────────────────────────────────────
   try {
