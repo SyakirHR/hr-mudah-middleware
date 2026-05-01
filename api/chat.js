@@ -537,9 +537,12 @@ TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
   // ─── Build messages ─────────────────────────────────────
   const messages = [{ role: 'system', content: systemPrompt }];
 
+  // Strip HTML from answers before sending to AI so it doesn't get confused
+  const stripHtml = (str) => (str || '').replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim();
+
   parsedHistory.forEach(exchange => {
     messages.push({ role: 'user', content: exchange.question });
-    messages.push({ role: 'assistant', content: exchange.answer });
+    messages.push({ role: 'assistant', content: stripHtml(exchange.answer) });
   });
 
   // ─── Smart injection logic ─────────────────────────────
