@@ -556,12 +556,10 @@ TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
   const questionLower = question.trim().toLowerCase();
   const hasHistory = parsedHistory.length > 0;
 
-  // Detect what the LAST bot message was about
   const lastBotAnswer = hasHistory
     ? (parsedHistory[parsedHistory.length - 1]?.answer ?? '').toLowerCase()
     : '';
 
-  // Did the bot just ask the rest day / off day clarification question?
   const botJustAskedClarification =
     lastBotAnswer.includes('rest day') &&
     lastBotAnswer.includes('off day') &&
@@ -572,7 +570,6 @@ TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
   const mentionsRestDay = ['rest day', 'restday', 'hari rehat'].some(k => questionLower.includes(k));
 
   if (botJustAskedClarification) {
-    // User is ANSWERING the clarification — never ask again, calculate immediately
     const dayType = mentionsRestDay ? 'REST DAY (Section 60 rates apply)'
                   : mentionsOffDay  ? 'OFF DAY (1.5x hourly rate per hour worked)'
                   : 'the day type the user just confirmed';
@@ -581,14 +578,11 @@ TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
       content: `The user is answering your previous clarification question. They confirmed: "${question.trim()}". Treat this as ${dayType}. Calculate immediately using the correct rate. Do NOT ask for clarification again under any circumstances.`
     });
   } else if (mentionsOffDay && !hasHistory) {
-    // Fresh first message mentioning off day — must ask clarification
     messages.push({
       role: 'system',
       content: 'Perkataan "off day" yang digunakan oleh pengguna adalah tidak jelas — ia boleh bermaksud Hari Rehat (Seksyen 59) atau hari tidak bekerja atas polisi syarikat. Tanya soalan pengesahan ini sebelum menjawab: "Boleh sahkan — adakah yang anda maksudkan itu (1) Hari Rehat di bawah Seksyen 59 Akta Kerja 1955, atau (2) Off Day atas polisi syarikat sahaja?" Letakkan soalan ini dalam [JAWAPAN RINGKAS]. Tambah [CHOICES: Hari Rehat (Seksyen 59) | Off Day (Polisi Syarikat)] selepas [DISCLAIMER]. Jangan jawab soalan asal lagi.'
     });
   } else if (mentionsOffDay && hasHistory && !botJustAskedClarification) {
-    // Mentioned off day in a later message but bot did NOT just ask clarification
-    // Check history to see if off day type was already established
     const offDayAlreadyConfirmed = parsedHistory.some(p =>
       (p.question || '').toLowerCase().includes('rest day') ||
       (p.question || '').toLowerCase().includes('hari rehat') ||
@@ -603,7 +597,6 @@ TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
     }
   }
 
-  // Add current question
   messages.push({ role: 'user', content: question });
 
   // ─── Call OpenAI ──────────────────────────────────────────────────────────
@@ -632,7 +625,6 @@ TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
     // ─── Convert to HTML ────────────────────────────────────────────────────
     const headerStyle = 'display:block;font-weight:bold;margin:12px 0 0 0;padding:0;line-height:1.5;';
 
-    // Step 0: Strip \n immediately after markers BEFORE converting markers to HTML
     let htmlAnswer = rawAnswer
       .replace(/\[JAWAPAN RINGKAS\]\n+/g, '[JAWAPAN RINGKAS]')
       .replace(/\[PENERANGAN\]\n+/g, '[PENERANGAN]')
@@ -649,7 +641,6 @@ TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
       .replace(/\*\*EXPLANATION\*\*\n+/g, '**EXPLANATION**')
       .replace(/\*\*REFERENCE\*\*\n+/g, '**REFERENCE**');
 
-    // Step 1: Convert markers to styled HTML headers
     htmlAnswer = htmlAnswer
       .replace(/\[JAWAPAN RINGKAS\]/g, `<b style="${headerStyle}">JAWAPAN RINGKAS</b>`)
       .replace(/\[PENERANGAN\]/g,      `<b style="${headerStyle}">PENERANGAN</b>`)
@@ -666,30 +657,25 @@ TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
       .replace(/\*\*EXPLANATION\*\*/g,     `<b style="${headerStyle}">EXPLANATION</b>`)
       .replace(/\*\*REFERENCE\*\*/g,       `<b style="${headerStyle}">REFERENCE</b>`);
 
-    // Step 2: Convert remaining newlines to <br>
     htmlAnswer = htmlAnswer.replace(/\n/g, '<br>');
-
-    // Step 3: Safety — remove any <br> still left after a closing </b> header tag
     htmlAnswer = htmlAnswer.replace(/<\/b>(<br>)*/g, '</b>');
-
-    // Step 4: Collapse 3+ <br> to 2
     htmlAnswer = htmlAnswer.replace(/(<br>){3,}/g, '<br><br>');
 
     if (!htmlAnswer.trim()) { htmlAnswer = rawAnswer.replace(/\n/g, '<br>'); }
 
     const answer = `<div style="font-family: Poppins, sans-serif; font-size: 12px; line-height: 1.5; margin:0; padding:0;">${htmlAnswer}</div>`;
 
-    // Extract [CHOICES: ...] marker if present
+    // ─── Extract [CHOICES: ...] and return as pipe-delimited STRING ──────────
     const choicesMatch = answer.match(/\[CHOICES:\s*([^\]]+)\]/);
-    let choices = [];
+    let choicesString = '';
     let cleanAnswer = answer;
     if (choicesMatch) {
-      choices = choicesMatch[1].split('|').map(s => s.trim()).filter(Boolean);
-      // Remove the [CHOICES:...] marker from the displayed answer
+      const choicesArray = choicesMatch[1].split('|').map(s => s.trim()).filter(Boolean);
+      choicesString = choicesArray.join(' | ');  // ← pipe-delimited string, NOT an array
       cleanAnswer = answer.replace(/\[CHOICES:\s*[^\]]+\]/, '').replace(/(<br>\s*){2,}$/, '').trim();
     }
 
-    return res.status(200).json({ answer: cleanAnswer, choices });
+    return res.status(200).json({ answer: cleanAnswer, choices: choicesString });
 
   } catch (err) {
     return res.status(500).json({ error: err.message });
