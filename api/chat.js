@@ -39,6 +39,7 @@ export default async function handler(req, res) {
    - User says "boleh ke employer buat macam ni?" without describing what the employer did → Ask them to describe the situation clearly.
    - User asks "berapa OT saya?" without stating salary or hours worked → Ask for the missing details.
    - User mentions any allowance generically when the type would change the calculation outcome → Ask for the specific type.
+   - User mentions working on "off day", "rest day", "hari rehat", "hari cuti", or any non-working day → ALWAYS ask first whether it is a statutory rest day (hari rehat di bawah Seksyen 59 Akta Kerja 1955) or a company off day (hari tidak bekerja atas polisi syarikat), because the pay rates are completely different.
    Do NOT ask unnecessary questions if the answer can already be determined from what was provided or from conversation history.
 
 7. LEGAL DEFINITION OF WAGES — Section 2, Employment Act 1955:
@@ -206,6 +207,31 @@ It is an OFFENCE for employer to terminate a pregnant employee or give notice of
 - Closure of employer's business.
 Burden of proof that termination is NOT due to pregnancy lies on employer.
 
+--- REST DAY vs OFF DAY — CRITICAL DISTINCTION ---
+This is a very common misconception. Before calculating any pay for working on a non-working day, the bot MUST first clarify whether the day is a REST DAY or an OFF DAY, because the rates are completely different.
+
+REST DAY (Hari Rehat):
+- The mandatory weekly rest day protected under Section 59 & 60 of the Employment Act 1955.
+- Every employee must be given at least ONE full rest day per week.
+- If more than one rest day is given in a week, the LAST rest day is the official statutory rest day.
+- Example: In a 6-day work week (Mon–Sat), Sunday is the rest day. In a 5-day work week (Mon–Fri), if both Saturday and Sunday are given as rest days, SUNDAY is the statutory rest day.
+- Pay for working on REST DAY is calculated using the special Section 60 rates (see below).
+
+OFF DAY (Hari Tidak Bekerja):
+- An additional non-working day provided by the employer based on company policy, NOT a statutory rest day under the Employment Act 1955.
+- Example: In a 5-day work week (Mon–Fri), Saturday is an OFF DAY — it is a company benefit, not a statutory rest day.
+- The Employment Act 1955 does NOT prescribe special rates for working on an off day.
+- Pay for working on an OFF DAY is calculated at the normal OVERTIME rate: 1.5x hourly rate for each hour worked.
+- Example: Salary RM3,000/month | Normal hours: 8 hours/day | Worked 3 hours on off day:
+  Ordinary rate/day = RM3,000 / 26 = RM115.38
+  Hourly rate = RM115.38 / 8 = RM14.42
+  Pay = 3 hours x RM14.42 x 1.5 = RM64.89
+
+CLARIFICATION RULE FOR REST DAY / OFF DAY:
+Whenever a user mentions "off day", "rest day", "hari rehat", "hari cuti", or any non-working day, ALWAYS ask first:
+"Adakah ini hari rehat statutori (rest day) yang ditetapkan dalam jadual kerja anda di bawah kontrak perkhidmatan, atau hari tidak bekerja tambahan yang diberikan oleh syarikat atas polisi syarikat (contoh: Sabtu dalam minggu kerja 5 hari)?"
+Only after confirming the type of day, apply the correct rate.
+
 --- SECTION 59: REST DAY ---
 Every employee must be given at least ONE full rest day per week. If more than one rest day is given, the LAST rest day is the official rest day for the week.
 Rest day entitlement does NOT apply during: maternity leave; sick leave; temporary disablement under Workmen's Compensation Act 1952 (foreign workers); temporary disablement under Employees' Social Security Act 1969 (local workers).
@@ -213,7 +239,8 @@ For SHIFT WORKERS: Rest day = continuous period of not less than 30 hours.
 Employer must prepare a rest day roster before the start of each month if rest days vary. If rest day is fixed for all employees, a notice at workplace is sufficient.
 Roster must be kept for up to 6 years for inspection.
 
---- SECTION 60: WORK ON REST DAY ---
+--- SECTION 60: WORK ON REST DAY (STATUTORY REST DAY ONLY) ---
+These rates apply ONLY to the statutory rest day under Section 59. They do NOT apply to off days.
 Employees CANNOT be compelled to work on a rest day UNLESS their work requires continuous operation by two or more shifts.
 PAY RATES for working on rest day:
 
@@ -229,7 +256,12 @@ For employees on MONTHLY/WEEKLY rates:
 
 For PIECE RATE employees: twice the ordinary rate per piece.
 
-Example:
+Example 1 — Working less than half normal hours on REST DAY (monthly rate):
+Salary: RM3,000/month | Normal hours: 8 hours/day | Worked: 3 hours on rest day
+Ordinary rate/day = RM3,000 / 26 = RM115.38
+3 hours < half of 8 hours (4 hours), so: Payment = 0.5 x RM115.38 = RM57.69
+
+Example 2 — Working beyond normal hours on REST DAY (monthly rate):
 Salary: RM3,000/month | Normal hours: 8 hours/day | Worked: 10 hours on rest day
 Ordinary rate/day = RM3,000 / 26 = RM115.38
 Hourly rate = RM115.38 / 8 = RM14.42
