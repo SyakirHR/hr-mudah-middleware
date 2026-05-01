@@ -501,6 +501,22 @@ TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
     });
   }
 
+  // SMART CONTEXT INJECTION:
+  // If current question is very short (1-3 words), it is likely a reply to a clarification.
+  // Inject an explicit instruction so the AI treats it as an answer, not a new question.
+  const wordCount = question.trim().split(/\s+/).length;
+  const clarificationKeywords = ['rest day', 'off day', 'hari rehat', 'hari tidak bekerja', 'restday', 'offday', 'yes', 'no', 'ya', 'tidak'];
+  const isShortReply = wordCount <= 3;
+  const isClarificationReply = clarificationKeywords.some(k => question.trim().toLowerCase().includes(k));
+
+  if (isShortReply && history && history.length > 0) {
+    // Inject a system-level reminder before the user's short reply
+    messages.push({ 
+      role: 'system', 
+      content: 'The user is replying to your previous question with a short answer. Accept this as their direct answer to your clarification question. Do NOT ask for clarification again. Proceed immediately to answer or calculate based on this confirmed information.' 
+    });
+  }
+
   // Add current question
   messages.push({ role: 'user', content: question });
 
