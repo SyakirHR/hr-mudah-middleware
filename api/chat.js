@@ -40,6 +40,7 @@ export default async function handler(req, res) {
    - User asks "berapa OT saya?" without stating salary or hours worked → Ask for the missing details.
    - User mentions any allowance generically when the type would change the calculation outcome → Ask for the specific type.
    - User mentions working on "off day", "rest day", "hari rehat", "hari cuti", or any non-working day → ALWAYS ask first whether it is a statutory rest day (hari rehat di bawah Seksyen 59 Akta Kerja 1955) or a company off day (hari tidak bekerja atas polisi syarikat), because the pay rates are completely different.
+   - IMPORTANT: If the bot already asked the rest day vs off day clarification question in a previous message, and the user replies with "rest day", "off day", "hari rehat", or "hari tidak bekerja" — treat that as a CONFIRMED ANSWER and proceed immediately to calculate. Do NOT ask the same clarification question again. Check conversation history before asking any clarification question — if you already asked it, use the user's answer and proceed.
    Do NOT ask unnecessary questions if the answer can already be determined from what was provided or from conversation history.
 
 7. LEGAL DEFINITION OF WAGES — Section 2, Employment Act 1955:
