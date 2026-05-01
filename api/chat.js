@@ -528,11 +528,21 @@ TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
   // SMART INJECTION: Only inject when parsedHistory has content AND current message is short
   // parsedHistory.length > 0 means this is a follow-up reply, not a first message
   // This prevents the injection from firing on first messages containing clarification keywords
-  console.log('parsedHistory length:', parsedHistory.length, 'isShortReply:', isShortReply, 'question:', question);
-  if (parsedHistory.length > 0 && isShortReply) {
+  const questionLower = question.trim().toLowerCase();
+  const mentionsOffDay = ['off day', 'offday', 'hari tidak bekerja', 'hari cuti'].some(k => questionLower.includes(k));
+  const mentionsRestDay = ['rest day', 'restday', 'hari rehat'].some(k => questionLower.includes(k));
+
+  if (mentionsOffDay && parsedHistory.length === 0) {
+    // First message mentioning off day — force clarification
+    messages.push({
+      role: 'system',
+      content: 'MANDATORY: The user mentioned "off day". In Malaysia, this term is commonly used interchangeably for both statutory rest day and company off day. You MUST ask the following clarification question before doing any calculation. Do NOT calculate anything yet. Ask: "Sebelum saya kira bayaran, boleh sahkan sama ada hari yang anda maksudkan adalah: (1) Hari Rehat (Rest Day) — hari rehat statutori yang ditetapkan dalam jadual kerja di bawah kontrak perkhidmatan, atau (2) Off Day — hari tidak bekerja tambahan yang diberikan oleh syarikat atas polisi syarikat (contoh: Sabtu dalam minggu kerja 5 hari)? Sila jawab 'rest day' atau 'off day'."'
+    });
+  } else if (parsedHistory.length > 0 && isShortReply) {
+    // Follow-up short reply — user is answering clarification question
     messages.push({ 
       role: 'system', 
-      content: 'IMPORTANT: The user has just answered your previous clarification question with a short reply. You MUST now proceed to calculate immediately based on their answer. Do NOT ask for clarification again. If they confirmed "off day" (company policy day) — calculate at 1.5x hourly rate per hour worked. If they confirmed "rest day" (statutory rest day) — use Section 60 rates: monthly rate, work not exceeding half normal hours = 0.5x ordinary rate of pay; work exceeding half but not exceeding normal hours = 1x ordinary rate of pay; work beyond normal hours = 2x hourly rate per OT hour. Use salary information from earlier in the conversation.' 
+      content: 'IMPORTANT: The user has just answered your previous clarification question. Proceed immediately to calculate. Do NOT ask again. If they said "off day" — company off day, calculate at 1.5x hourly rate per hour worked. If they said "rest day" — statutory rest day, use Section 60 rates: monthly rate employees: work not exceeding half normal hours = 0.5x ordinary rate; work exceeding half but not exceeding normal hours = 1x ordinary rate; work beyond normal hours = 2x hourly rate per OT hour.' 
     });
   }
 
