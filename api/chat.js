@@ -3,19 +3,11 @@ export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
-
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
+  if (req.method === 'OPTIONS') return res.status(200).end();
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   const { question, history } = req.body;
-
-  if (!question) {
-    return res.status(400).json({ error: 'Question is required' });
-  }
+  if (!question) return res.status(400).json({ error: 'Question is required' });
 
   const systemPrompt = `You are an HR assistant for Malaysian companies specializing in the Employment Act 1955 / Akta Kerja 1955 (Malaysia). STRICT RULES you must follow:
 
@@ -528,11 +520,9 @@ Rest Day work — full 7.5 hours, 2 days: RM69.23 x 1.0 x 2 = RM138.46
 Public Holiday work — full 7.5 hours, 1 day: RM69.23 x 2.0 x 1 = RM138.46
 TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
 
-  // ─── Parse conversation history ───────────────────────────────────────────
+  // ─── Parse history ─────────────────────────────────────
   let parsedHistory = [];
-  if (history && Array.isArray(history)) {
-    parsedHistory = history;
-  } else if (history && typeof history === 'string' && history.trim().length > 0) {
+  if (history && typeof history === 'string' && history.trim()) {
     const pairs = history.split('[PAIR]');
     pairs.forEach(pair => {
       const sepIndex = pair.indexOf('[SEP]');
@@ -544,27 +534,29 @@ TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
     });
   }
 
-  // ─── Build messages array ─────────────────────────────────────────────────
+  // ─── Build messages ─────────────────────────────────────
   const messages = [{ role: 'system', content: systemPrompt }];
 
   parsedHistory.forEach(exchange => {
-    if (exchange.question) messages.push({ role: 'user', content: exchange.question });
-    if (exchange.answer)   messages.push({ role: 'assistant', content: exchange.answer });
+    messages.push({ role: 'user', content: exchange.question });
+    messages.push({ role: 'assistant', content: exchange.answer });
   });
 
-  // ─── Smart injection logic ────────────────────────────────────────────────
+  // ─── Smart injection logic ─────────────────────────────
   const questionLower = question.trim().toLowerCase();
   const hasHistory = parsedHistory.length > 0;
 
+  // ✅ Strip HTML tags before checking last bot answer
   const lastBotAnswer = hasHistory
-    ? (parsedHistory[parsedHistory.length - 1]?.answer ?? '').toLowerCase()
+    ? (parsedHistory[parsedHistory.length - 1]?.answer ?? '')
+        .replace(/<[^>]*>/g, '')
+        .toLowerCase()
     : '';
 
+  // ✅ Reliable detection — bot just asked rest day vs off day clarification
   const botJustAskedClarification =
-    lastBotAnswer.includes('rest day') &&
-    lastBotAnswer.includes('off day') &&
-    (lastBotAnswer.includes('sahkan') || lastBotAnswer.includes('confirm') ||
-     lastBotAnswer.includes('maksudkan') || lastBotAnswer.includes('clarif'));
+    lastBotAnswer.includes('hari rehat') &&
+    lastBotAnswer.includes('off day');
 
   const mentionsOffDay = ['off day', 'offday', 'hari tidak bekerja', 'hari cuti'].some(k => questionLower.includes(k));
   const mentionsRestDay = ['rest day', 'restday', 'hari rehat'].some(k => questionLower.includes(k));
@@ -573,21 +565,24 @@ TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
     const dayType = mentionsRestDay ? 'REST DAY (Section 60 rates apply)'
                   : mentionsOffDay  ? 'OFF DAY (1.5x hourly rate per hour worked)'
                   : 'the day type the user just confirmed';
+
     messages.push({
       role: 'system',
-      content: `The user is answering your previous clarification question. They confirmed: "${question.trim()}". Treat this as ${dayType}. Calculate immediately using the correct rate. Do NOT ask for clarification again under any circumstances.`
+      content: `The user is answering your previous clarification question. They confirmed: "${question.trim()}". Treat this as ${dayType}. Now answer the ORIGINAL question from the conversation history using the correct rate. Do NOT explain what rest day or off day means. Do NOT ask again. Calculate and answer directly.`
     });
+
   } else if (mentionsOffDay && !hasHistory) {
     messages.push({
       role: 'system',
       content: 'Perkataan "off day" yang digunakan oleh pengguna adalah tidak jelas — ia boleh bermaksud Hari Rehat (Seksyen 59) atau hari tidak bekerja atas polisi syarikat. Tanya soalan pengesahan ini sebelum menjawab: "Boleh sahkan — adakah yang anda maksudkan itu (1) Hari Rehat di bawah Seksyen 59 Akta Kerja 1955, atau (2) Off Day atas polisi syarikat sahaja?" Letakkan soalan ini dalam [JAWAPAN RINGKAS]. Tambah [CHOICES: Hari Rehat (Seksyen 59) | Off Day (Polisi Syarikat)] selepas [DISCLAIMER]. Jangan jawab soalan asal lagi.'
     });
+
   } else if (mentionsOffDay && hasHistory && !botJustAskedClarification) {
     const offDayAlreadyConfirmed = parsedHistory.some(p =>
       (p.question || '').toLowerCase().includes('rest day') ||
       (p.question || '').toLowerCase().includes('hari rehat') ||
-      (p.answer  || '').toLowerCase().includes('off day (1.5x') ||
-      (p.answer  || '').toLowerCase().includes('rest day (section 60')
+      (p.answer || '').replace(/<[^>]*>/g, '').toLowerCase().includes('off day (1.5x') ||
+      (p.answer || '').replace(/<[^>]*>/g, '').toLowerCase().includes('rest day (section 60')
     );
     if (!offDayAlreadyConfirmed) {
       messages.push({
@@ -599,7 +594,7 @@ TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
 
   messages.push({ role: 'user', content: question });
 
-  // ─── Call OpenAI ──────────────────────────────────────────────────────────
+  // ─── OpenAI call ─────────────────────────────────────
   try {
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -616,30 +611,21 @@ TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
     });
 
     const data = await response.json();
-    if (!response.ok) {
-      return res.status(500).json({ error: data.error?.message || 'OpenAI error' });
-    }
+    if (!response.ok) return res.status(500).json({ error: data.error?.message || 'OpenAI error' });
 
     const rawAnswer = data.choices[0].message.content;
 
-    // ─── Convert to HTML ────────────────────────────────────────────────────
+    // ─── Convert to HTML ────────────────────────────────
     const headerStyle = 'display:block;font-weight:bold;margin:12px 0 0 0;padding:0;line-height:1.5;';
 
     let htmlAnswer = rawAnswer
-      .replace(/\[JAWAPAN RINGKAS\]\n+/g, '[JAWAPAN RINGKAS]')
-      .replace(/\[PENERANGAN\]\n+/g, '[PENERANGAN]')
-      .replace(/\[RUJUKAN\]\n+/g, '[RUJUKAN]')
-      .replace(/\[DISCLAIMER\]\n+/g, '[DISCLAIMER]')
-      .replace(/\[BRIEF ANSWER\]\n+/g, '[BRIEF ANSWER]')
-      .replace(/\[EXPLANATION\]\n+/g, '[EXPLANATION]')
-      .replace(/\[REFERENCE\]\n+/g, '[REFERENCE]')
-      .replace(/\*\*JAWAPAN RINGKAS\*\*\n+/g, '**JAWAPAN RINGKAS**')
-      .replace(/\*\*PENERANGAN\*\*\n+/g, '**PENERANGAN**')
-      .replace(/\*\*RUJUKAN\*\*\n+/g, '**RUJUKAN**')
-      .replace(/\*\*DISCLAIMER\*\*\n+/g, '**DISCLAIMER**')
-      .replace(/\*\*BRIEF ANSWER\*\*\n+/g, '**BRIEF ANSWER**')
-      .replace(/\*\*EXPLANATION\*\*\n+/g, '**EXPLANATION**')
-      .replace(/\*\*REFERENCE\*\*\n+/g, '**REFERENCE**');
+      .replace(/\[JAWAPAN RINGKAS\]\n*/g, '[JAWAPAN RINGKAS]')
+      .replace(/\[PENERANGAN\]\n*/g, '[PENERANGAN]')
+      .replace(/\[RUJUKAN\]\n*/g, '[RUJUKAN]')
+      .replace(/\[DISCLAIMER\]\n*/g, '[DISCLAIMER]')
+      .replace(/\[BRIEF ANSWER\]\n*/g, '[BRIEF ANSWER]')
+      .replace(/\[EXPLANATION\]\n*/g, '[EXPLANATION]')
+      .replace(/\[REFERENCE\]\n*/g, '[REFERENCE]');
 
     htmlAnswer = htmlAnswer
       .replace(/\[JAWAPAN RINGKAS\]/g, `<b style="${headerStyle}">JAWAPAN RINGKAS</b>`)
@@ -648,14 +634,7 @@ TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
       .replace(/\[DISCLAIMER\]/g,      `<b style="${headerStyle}">DISCLAIMER</b>`)
       .replace(/\[BRIEF ANSWER\]/g,    `<b style="${headerStyle}">BRIEF ANSWER</b>`)
       .replace(/\[EXPLANATION\]/g,     `<b style="${headerStyle}">EXPLANATION</b>`)
-      .replace(/\[REFERENCE\]/g,       `<b style="${headerStyle}">REFERENCE</b>`)
-      .replace(/\*\*JAWAPAN RINGKAS\*\*/g, `<b style="${headerStyle}">JAWAPAN RINGKAS</b>`)
-      .replace(/\*\*PENERANGAN\*\*/g,      `<b style="${headerStyle}">PENERANGAN</b>`)
-      .replace(/\*\*RUJUKAN\*\*/g,         `<b style="${headerStyle}">RUJUKAN</b>`)
-      .replace(/\*\*DISCLAIMER\*\*/g,      `<b style="${headerStyle}">DISCLAIMER</b>`)
-      .replace(/\*\*BRIEF ANSWER\*\*/g,    `<b style="${headerStyle}">BRIEF ANSWER</b>`)
-      .replace(/\*\*EXPLANATION\*\*/g,     `<b style="${headerStyle}">EXPLANATION</b>`)
-      .replace(/\*\*REFERENCE\*\*/g,       `<b style="${headerStyle}">REFERENCE</b>`);
+      .replace(/\[REFERENCE\]/g,       `<b style="${headerStyle}">REFERENCE</b>`);
 
     htmlAnswer = htmlAnswer.replace(/\n/g, '<br>');
     htmlAnswer = htmlAnswer.replace(/<\/b>(<br>)*/g, '</b>');
@@ -665,13 +644,14 @@ TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
 
     const answer = `<div style="font-family: Poppins, sans-serif; font-size: 12px; line-height: 1.5; margin:0; padding:0;">${htmlAnswer}</div>`;
 
-    // ─── Extract [CHOICES: ...] and return as pipe-delimited STRING ──────────
+    // ─── Extract choices ──────────────────────────────
     const choicesMatch = answer.match(/\[CHOICES:\s*([^\]]+)\]/);
     let choicesString = '';
     let cleanAnswer = answer;
+
     if (choicesMatch) {
       const choicesArray = choicesMatch[1].split('|').map(s => s.trim()).filter(Boolean);
-      choicesString = choicesArray.join(' | ');  // ← pipe-delimited string, NOT an array
+      choicesString = choicesArray.join(' | ');
       cleanAnswer = answer.replace(/\[CHOICES:\s*[^\]]+\]/, '').replace(/(<br>\s*){2,}$/, '').trim();
     }
 
