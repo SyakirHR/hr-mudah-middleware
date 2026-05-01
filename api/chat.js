@@ -509,11 +509,11 @@ TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
   const isShortReply = wordCount <= 3;
   const isClarificationReply = clarificationKeywords.some(k => question.trim().toLowerCase().includes(k));
 
-  if (isShortReply && history && history.length > 0) {
+  if ((isShortReply || isClarificationReply) && history && Array.isArray(history) && history.length > 0) {
     // Inject a system-level reminder before the user's short reply
     messages.push({ 
       role: 'system', 
-      content: 'The user is replying to your previous question with a short answer. Accept this as their direct answer to your clarification question. Do NOT ask for clarification again. Proceed immediately to answer or calculate based on this confirmed information.' 
+      content: 'The user is replying with a short answer to your previous clarification question. Do NOT ask for clarification again. Proceed immediately to answer or calculate based on this confirmed information. If they said "off day" — calculate at 1.5x hourly rate per hour worked. If they said "rest day" — use Section 60 statutory rest day rates.' 
     });
   }
 
