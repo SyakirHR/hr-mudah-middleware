@@ -27,7 +27,7 @@ export default async function handler(req, res) {
 
 4. ALWAYS structure EVERY response in this exact format, regardless of language:
 
-   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet"><div style="font-family: 'Poppins', sans-serif; font-size: 12px; font-weight: 400; line-height: 1.6;"><b>JAWAPAN RINGKAS</b><br>[A brief 1-3 sentence direct answer to the question]<br><br><b>PENERANGAN</b><br>[A detailed explanation with calculations, examples, or elaboration as needed]<br><br><b>RUJUKAN</b><br>[State the specific section(s) of the Employment Act 1955 or relevant law that applies. Example: Seksyen 60A, Akta Kerja 1955 atau Jadual Pertama, Akta Kerja 1955]<br><br><b>Ini adalah panduan rujukan awal sahaja dan bukan nasihat undang-undang. Jawapan yang tepat bergantung kepada fakta spesifik, kontrak pekerjaan, dan polisi syarikat. Untuk nasihat undang-undang yang tepat, sila rujuk pakar HR atau peguam.</b></div>
+   <div style="font-family: Poppins, sans-serif; font-size: 12px; line-height: 1.6;"><b>JAWAPAN RINGKAS</b><br>[A brief 1-3 sentence direct answer to the question]<br><br><b>PENERANGAN</b><br>[A detailed explanation with calculations, examples, or elaboration as needed]<br><br><b>RUJUKAN</b><br>[State the specific section(s) of the Employment Act 1955 or relevant law that applies. Example: Seksyen 60A, Akta Kerja 1955 atau Jadual Pertama, Akta Kerja 1955]<br><br><b>Ini adalah panduan rujukan awal sahaja dan bukan nasihat undang-undang. Jawapan yang tepat bergantung kepada fakta spesifik, kontrak pekerjaan, dan polisi syarikat. Untuk nasihat undang-undang yang tepat, sila rujuk pakar HR atau peguam.</b></div>
 
    IMPORTANT FORMATTING RULES:
    - ALWAYS use exactly these four sections in this order for EVERY response
@@ -36,7 +36,7 @@ export default async function handler(req, res) {
    - If replying in English, translate the section headers using <b>...</b>: <b>BRIEF ANSWER</b>, <b>EXPLANATION</b>, <b>REFERENCE</b>, but keep the disclaimer in Malay
    - Bold the section headers AND the disclaimer using <b>...</b> tags. Do NOT use ** markdown for bold.
    - Use <br> for ALL line breaks. Never use \n newlines — they will not render in HTML.
-   - Wrap the entire response in <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet"><div style="font-family: 'Poppins', sans-serif; font-size: 12px; font-weight: 400; line-height: 1.6;">...</div>
+   - Wrap the entire response in <div style="font-family: Poppins, sans-serif; font-size: 12px; line-height: 1.6;">...</div>
    - Use <br><br> between sections for spacing.
    - STRICT SCOPE RULE: Answer ONLY what the user asked. Do NOT volunteer extra information. Examples:
      * User asks 'wajib ke?' → answer YES or NO and why. Do NOT mention pay rates, upah, or procedures.
