@@ -622,31 +622,29 @@ TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
     const rawAnswer = data.choices[0].message.content;
 
     // ─── Convert to HTML ────────────────────────────────────────────────────
-    // Use inline styles on headers so Bubble cannot strip them
-    const headerStyle = 'display:block;font-weight:bold;margin:10px 0 0 0;padding:0;';
+    const headerStyle = 'display:block;font-weight:bold;margin:12px 0 0 0;padding:0;line-height:1.5;';
     let htmlAnswer = rawAnswer
       .replace(/\[JAWAPAN RINGKAS\]/g, `<b style="${headerStyle}">JAWAPAN RINGKAS</b>`)
       .replace(/\[PENERANGAN\]/g,      `<b style="${headerStyle}">PENERANGAN</b>`)
       .replace(/\[RUJUKAN\]/g,         `<b style="${headerStyle}">RUJUKAN</b>`)
       .replace(/\[DISCLAIMER\]/g,      `<b style="${headerStyle}">DISCLAIMER</b>`)
-      // English headers
       .replace(/\[BRIEF ANSWER\]/g,    `<b style="${headerStyle}">BRIEF ANSWER</b>`)
       .replace(/\[EXPLANATION\]/g,     `<b style="${headerStyle}">EXPLANATION</b>`)
-      .replace(/\[REFERENCE\]/g,       `<b style="${headerStyle}">REFERENCE</b>`);
+      .replace(/\[REFERENCE\]/g,       `<b style="${headerStyle}">REFERENCE</b>`)
+      .replace(/\*\*JAWAPAN RINGKAS\*\*/g, `<b style="${headerStyle}">JAWAPAN RINGKAS</b>`)
+      .replace(/\*\*PENERANGAN\*\*/g,      `<b style="${headerStyle}">PENERANGAN</b>`)
+      .replace(/\*\*RUJUKAN\*\*/g,         `<b style="${headerStyle}">RUJUKAN</b>`)
+      .replace(/\*\*DISCLAIMER\*\*/g,      `<b style="${headerStyle}">DISCLAIMER</b>`)
+      .replace(/\*\*BRIEF ANSWER\*\*/g,    `<b style="${headerStyle}">BRIEF ANSWER</b>`)
+      .replace(/\*\*EXPLANATION\*\*/g,     `<b style="${headerStyle}">EXPLANATION</b>`)
+      .replace(/\*\*REFERENCE\*\*/g,       `<b style="${headerStyle}">REFERENCE</b>`);
 
-    // Convert all newlines to <br>
     htmlAnswer = htmlAnswer.replace(/\n/g, '<br>');
-
-    // Remove ALL <br> immediately after a header closing tag — display:block handles the break
     htmlAnswer = htmlAnswer.replace(/<\/b>(<br>)+/g, '</b>');
-
-    // Collapse 3+ consecutive <br> down to 2
     htmlAnswer = htmlAnswer.replace(/(<br>){3,}/g, '<br><br>');
+    if (!htmlAnswer.trim()) { htmlAnswer = rawAnswer.replace(/\n/g, '<br>'); }
 
-    // Wrap in container
-    const answer = `<div style="font-family: Poppins, sans-serif; font-size: 12px; line-height: 1.5; margin:0; padding:0;">` +
-                   htmlAnswer +
-                   `</div>`;
+    const answer = `<div style="font-family: Poppins, sans-serif; font-size: 12px; line-height: 1.5; margin:0; padding:0;">${htmlAnswer}</div>`;
 
     return res.status(200).json({ answer });
 
