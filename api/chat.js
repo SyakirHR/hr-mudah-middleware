@@ -231,9 +231,9 @@ OFF DAY (Hari Tidak Bekerja):
   Pay = 3 hours x RM14.42 x 1.5 = RM64.89
 
 CLARIFICATION RULE FOR REST DAY / OFF DAY:
-- If user says "off day" or "hari tidak bekerja" → CONFIRMED as company off day. Calculate IMMEDIATELY at 1.5x hourly rate. Do NOT ask any clarification question.
-- If user says "rest day" or "hari rehat" WITHOUT any other context → Ask to confirm: is it the statutory rest day (hari rehat di bawah Seksyen 59) or a company off day?
-- If user already confirmed the type in a previous message → Use that answer. Do NOT ask again.
+- If user says "rest day" or "hari rehat" → CLEAR. Proceed immediately with Section 60 statutory rest day rates. No clarification needed.
+- If user says "off day", "hari tidak bekerja", "hari cuti", or any vague non-working day → MUST ask clarification first. Do NOT calculate yet.
+- If user already confirmed the type in a previous message → Use that answer immediately. Do NOT ask again.
 
 --- SECTION 59: REST DAY ---
 Every employee must be given at least ONE full rest day per week. If more than one rest day is given, the LAST rest day is the official rest day for the week.
