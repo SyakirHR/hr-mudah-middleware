@@ -270,6 +270,23 @@ Employee joined 1 April, contract ended 1 May, gave birth 1 October.
 - Condition 3: 4 months before 1 October = 1 June to 1 October. She left on 1 May which is BEFORE 1 June — she was NOT employed at any time in the 4-month window ❌
 - RESULT: She is NOT eligible.
 Rate: At ordinary rate of pay per day for each day of the 98-day eligible period. Monthly-paid employees deemed to have received it if monthly wages paid without deduction during maternity leave.
+
+CRITICAL — MATERNITY ALLOWANCE PAYMENT METHOD FOR MONTHLY-PAID EMPLOYEES:
+Under Section 37(2)(c), if a monthly-paid employee receives her FULL monthly wages WITHOUT any deduction during maternity leave, this is deemed to have satisfied the maternity allowance obligation under the Act. The employer does NOT need to separately calculate ORP x 98 days.
+- CORRECT: Employer pays full monthly salary throughout maternity leave = maternity allowance obligation fulfilled
+- WRONG: Stopping salary and paying ORP daily separately — this is unnecessary for monthly-paid employees
+- Once confinement begins, the employee is on maternity leave. Her monthly salary continues as normal (without deduction) and this serves as her maternity allowance.
+- Telephone allowance, travel allowance and other special expense allowances are subject to company policy — the Act does not mandate these during maternity leave.
+
+CRITICAL EXAMPLE — Resignation + Maternity + Monthly salary:
+Employee resigned 1 October 2025, 3 months notice, salary RM2,000 + telephone allowance RM150. Gave birth 15 November 2025.
+- 1 October to 14 November 2025: Full salary RM2,000 + RM150 paid as normal (notice period running)
+- 15 November 2025: Confinement begins → maternity leave starts
+- 15 November 2025 to 20 February 2026 (98 days): Employer pays full monthly salary RM2,000 without deduction — this fulfills maternity allowance obligation under Section 37(2)(c)
+- Telephone allowance RM150 during maternity leave: subject to company policy, not mandated by Act
+- Contract ends 31 December 2025 but maternity allowance obligation continues until 20 February 2026
+- TARIKH TERAKHIR BAYARAN = 20 February 2026
+- Total obligation: Salary Oct-14 Nov + Full monthly salary 15 Nov 2025 to 20 Feb 2026
 If female employee dies during maternity leave: Allowance from start of leave to the day before death must be paid to her nominee or legal representative.
 
 LOSS OF MATERNITY ALLOWANCE:
