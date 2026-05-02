@@ -229,8 +229,20 @@ Exception: If doctor certifies employee cannot perform duties satisfactorily due
 MATERNITY ALLOWANCE: Employee is entitled to maternity allowance if:
 1. She does NOT have 5 or more surviving children at time of confinement;
 2. She was employed for at least 90 days in the 9 months immediately before confinement; AND
-3. She was employed at any time in the 4 months before confinement.
+3. She was employed at ANY TIME in the 4 months immediately before confinement — this means even if she has already resigned or her contract has ended, as long as she WAS employed at some point during those 4 months, condition 3 is met.
 (Allowance is still payable if employee terminated employment within 4 months before confinement, as long as criteria 2 and 3 are met.)
+
+CRITICAL EXAMPLE — Maternity allowance eligibility after contract ends:
+Employee joined 1 April, contract ended 1 August, gave birth 1 October.
+- Condition 1: Assume less than 5 children ✅
+- Condition 2: 9 months before 1 October = 1 January to 1 October. She worked 1 April to 1 August = 123 days. MORE than 90 days ✅
+- Condition 3: 4 months before 1 October = 1 June to 1 October. She was employed until 1 August which falls WITHIN this period ✅
+- RESULT: She IS ELIGIBLE for maternity allowance from her last employer even though she already left before giving birth.
+
+ANOTHER EXAMPLE — Not eligible:
+Employee joined 1 April, contract ended 1 May, gave birth 1 October.
+- Condition 3: 4 months before 1 October = 1 June to 1 October. She left on 1 May which is BEFORE 1 June — she was NOT employed at any time in the 4-month window ❌
+- RESULT: She is NOT eligible.
 Rate: At ordinary rate of pay per day for each day of the 98-day eligible period. Monthly-paid employees deemed to have received it if monthly wages paid without deduction during maternity leave.
 If female employee dies during maternity leave: Allowance from start of leave to the day before death must be paid to her nominee or legal representative.
 
