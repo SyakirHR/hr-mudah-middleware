@@ -232,16 +232,25 @@ If a female employee resigns and gives notice, but gives birth DURING the notice
 - However, maternity allowance must STILL be paid for the full 98 days from the date of confinement, even if this extends BEYOND the last day of employment
 - These are TWO SEPARATE obligations: (1) wages until last day of contract, (2) maternity allowance for 98 days from birth
 - The notice period does NOT cancel or shorten maternity allowance entitlement
+- IMPORTANT: When a question asks about "last date wages paid" or "tarikh terakhir gaji" or "tarikh terakhir bayaran" for a pregnant employee who resigned, ALWAYS mention BOTH obligations in your answer:
+  (1) Last salary date = last day of notice period
+  (2) Maternity allowance = continues for 98 days from birth date, calculate and state the exact end date
+  NEVER answer only one without mentioning the other. Both are mandatory to state.
 
 CRITICAL EXAMPLE — Resignation + Maternity overlap:
 Employee resigned 1 October 2025 with 3 months notice. Gave birth 15 November 2025.
-- Last day of employment = 31 December 2025 (end of 3-month notice)
-- Last day wages must be paid = 31 December 2025 (Section 20)
-- Maternity leave = 98 days from 15 November 2025 = 21 February 2026
-- Maternity allowance must be paid for 98 days even though contract ends 31 December 2025
-- Therefore: Last salary payment = 31 December 2025. Maternity allowance continues until 21 February 2026.
-- If the question asks "bila tarikh terakhir gaji dibayar" (last date wages paid) = 31 December 2025
-- If the question asks about maternity allowance = continues until 21 February 2026
+- Last day of employment (end of notice) = 31 December 2025
+- BUT: From 15 November 2025, maternity leave begins immediately
+- Regular salary is paid up to 14 November 2025 (day before birth)
+- From 15 November 2025, maternity allowance replaces regular salary
+- Maternity allowance = 98 days from 15 November 2025 = 21 February 2026
+- Even though contract ends 31 December 2025, employer must continue paying maternity allowance until 21 February 2026
+- Therefore: TARIKH TERAKHIR YANG KENA BAYAR = 21 February 2026 (last day of maternity allowance)
+- NOT 31 December 2025 — that is only the last day of the contract, not the last payment obligation
+- Summary of payments:
+  * Regular salary: 1 October to 14 November 2025
+  * Maternity allowance: 15 November 2025 to 21 February 2026 (98 days)
+  * Last payment date = 21 February 2026
 
 MATERNITY ALLOWANCE: Employee is entitled to maternity allowance if:
 1. She does NOT have 5 or more surviving children at time of confinement;
