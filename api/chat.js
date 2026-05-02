@@ -15,7 +15,7 @@ export default async function handler(req, res) {
 
 2. NEVER mention chunk numbers, chunk names, or any internal reference like CHUNK 1, CHUNK 22, etc. Present the information naturally.
 
-3. ALWAYS reply in the EXACT same language as the question. If the question is in English, reply ENTIRELY in English including the disclaimer. If in Malay, reply ENTIRELY in Malay including the disclaimer.
+3. ALWAYS reply in the EXACT same language as the question. If the question is in English, reply ENTIRELY in English including ALL section headers and the disclaimer. If in Malay, reply ENTIRELY in Malay including the disclaimer.
 
 4. ALWAYS structure EVERY response in this exact format, regardless of language:
 
@@ -34,9 +34,12 @@ export default async function handler(req, res) {
    IMPORTANT FORMATTING RULES:
    - ALWAYS use exactly these four sections in this order for EVERY response
    - NEVER skip any section even if the answer is simple
-   - The disclaimer at the bottom is FIXED and must appear exactly as written above
-   - If replying in English, translate the section headers using <b>...</b>: <b>BRIEF ANSWER</b>, <b>EXPLANATION</b>, <b>REFERENCE</b>, but keep the disclaimer in Malay
-   - Bold the section headers AND the disclaimer using <b>...</b> tags. Do NOT use ** markdown for bold.
+   - If replying in English, translate ALL section headers AND the disclaimer to English using <b>...</b>:
+     <b>BRIEF ANSWER</b>, <b>EXPLANATION</b>, <b>REFERENCE</b>, <b>DISCLAIMER</b>
+     The English disclaimer must read exactly: "This is an initial reference guide only and not legal advice. The correct answer depends on specific facts, employment contract, and company policy. For accurate legal advice, please consult an HR expert or lawyer."
+   - If replying in Malay, use: <b>JAWAPAN RINGKAS</b>, <b>PENERANGAN</b>, <b>RUJUKAN</b>, <b>DISCLAIMER</b>
+     The Malay disclaimer must read exactly: "Ini adalah panduan rujukan awal sahaja dan bukan nasihat undang-undang. Jawapan yang tepat bergantung kepada fakta spesifik, kontrak pekerjaan, dan polisi syarikat. Untuk nasihat undang-undang yang tepat, sila rujuk pakar HR atau peguam."
+   - Bold the section headers using <b>...</b> tags. Do NOT use ** markdown for bold.
    - Use <br> for line breaks WITHIN a section body only (e.g. between bullet points or calculation steps). Never use \n newlines — they will not render in HTML.
    - CHOICES RULE: When you need clarification from the user, you MUST add a [CHOICES] marker at the very end of your response (after DISCLAIMER) in this exact format:
      [CHOICES: Option 1 | Option 2 | Option 3]
@@ -549,14 +552,14 @@ TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
   const questionLower = question.trim().toLowerCase();
   const hasHistory = parsedHistory.length > 0;
 
-  // ✅ Strip HTML tags before checking last bot answer
+  // Strip HTML tags before checking last bot answer
   const lastBotAnswer = hasHistory
     ? (parsedHistory[parsedHistory.length - 1]?.answer ?? '')
         .replace(/<[^>]*>/g, '')
         .toLowerCase()
     : '';
 
-  // ✅ Reliable detection — bot just asked rest day vs off day clarification
+  // Reliable detection — bot just asked rest day vs off day clarification
   const botJustAskedClarification =
     lastBotAnswer.includes('hari rehat') &&
     lastBotAnswer.includes('off day');
@@ -626,7 +629,7 @@ TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
     const rawAnswer = data.choices[0].message.content;
 
     // ─── Convert to HTML ────────────────────────────────
-    const headerStyle = 'display:block;font-weight:bold;margin:12px 0 0 0;padding:0;line-height:1.5;';
+    const headerStyle = 'display:block;font-weight:bold;margin:12px 0 4px 0;padding:0;line-height:1.5;';
 
     let htmlAnswer = rawAnswer
       .replace(/\[JAWAPAN RINGKAS\]\n*/g, '[JAWAPAN RINGKAS]')
@@ -646,8 +649,9 @@ TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
       .replace(/\[EXPLANATION\]/g,     `<b style="${headerStyle}">EXPLANATION</b>`)
       .replace(/\[REFERENCE\]/g,       `<b style="${headerStyle}">REFERENCE</b>`);
 
+    // Convert newlines to <br>, then ensure headers always have a <br> after them
     htmlAnswer = htmlAnswer.replace(/\n/g, '<br>');
-    htmlAnswer = htmlAnswer.replace(/<\/b>(<br>)*/g, '</b>');
+    htmlAnswer = htmlAnswer.replace(/<\/b>(<br>)*/g, '</b><br>');
     htmlAnswer = htmlAnswer.replace(/(<br>){3,}/g, '<br><br>');
 
     if (!htmlAnswer.trim()) { htmlAnswer = rawAnswer.replace(/\n/g, '<br>'); }
