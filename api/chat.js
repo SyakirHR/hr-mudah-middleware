@@ -661,6 +661,9 @@ TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
 
     if (!htmlAnswer.trim()) { htmlAnswer = rawAnswer.replace(/\n/g, '<br>'); }
 
+    // Remove any trailing <br> tags to prevent blank space at bottom of answer
+    htmlAnswer = htmlAnswer.replace(/(<br>\s*)+$/gi, '').trim();
+
     const answer = `<div style="font-family: Poppins, sans-serif; font-size: 12px; line-height: 1.5; margin:0; padding:0;">${htmlAnswer}</div>`;
 
     // ─── Extract choices ──────────────────────────────
