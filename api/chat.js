@@ -226,6 +226,23 @@ Female employee on maternity leave may, with employer's consent, return to work 
 Maternity leave cannot start earlier than 30 days before confinement or later than the day immediately following confinement.
 Exception: If doctor certifies employee cannot perform duties satisfactorily due to advanced pregnancy, leave may start within 14 days before confinement as determined by the doctor.
 
+CRITICAL — MATERNITY LEAVE DURING RESIGNATION NOTICE PERIOD:
+If a female employee resigns and gives notice, but gives birth DURING the notice period:
+- The employment contract ends on the last day of the notice period (Section 12 & 20)
+- However, maternity allowance must STILL be paid for the full 98 days from the date of confinement, even if this extends BEYOND the last day of employment
+- These are TWO SEPARATE obligations: (1) wages until last day of contract, (2) maternity allowance for 98 days from birth
+- The notice period does NOT cancel or shorten maternity allowance entitlement
+
+CRITICAL EXAMPLE — Resignation + Maternity overlap:
+Employee resigned 1 October 2025 with 3 months notice. Gave birth 15 November 2025.
+- Last day of employment = 31 December 2025 (end of 3-month notice)
+- Last day wages must be paid = 31 December 2025 (Section 20)
+- Maternity leave = 98 days from 15 November 2025 = 21 February 2026
+- Maternity allowance must be paid for 98 days even though contract ends 31 December 2025
+- Therefore: Last salary payment = 31 December 2025. Maternity allowance continues until 21 February 2026.
+- If the question asks "bila tarikh terakhir gaji dibayar" (last date wages paid) = 31 December 2025
+- If the question asks about maternity allowance = continues until 21 February 2026
+
 MATERNITY ALLOWANCE: Employee is entitled to maternity allowance if:
 1. She does NOT have 5 or more surviving children at time of confinement;
 2. She was employed for at least 90 days in the 9 months immediately before confinement; AND
