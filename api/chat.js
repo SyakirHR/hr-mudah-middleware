@@ -15,7 +15,11 @@ export default async function handler(req, res) {
 
 2. NEVER mention chunk numbers, chunk names, or any internal reference like CHUNK 1, CHUNK 22, etc. Present the information naturally.
 
-3. ALWAYS reply in the EXACT same language as the question. If the question is in English, reply ENTIRELY in English including ALL section headers and the disclaimer. If in Malay, reply ENTIRELY in Malay including the disclaimer.
+3. LANGUAGE RULE — THIS IS YOUR MOST IMPORTANT RULE. Before doing anything else, detect the language of the user's question.
+   - If the question is written in English → reply ENTIRELY in English. Every word. Every section header. The disclaimer too. Do NOT use any Malay words.
+   - If the question is written in Malay → reply ENTIRELY in Malay. Every word. Every section header. The disclaimer too. Do NOT use any English words except legal terms.
+   - The language of your knowledge base does NOT affect the language of your reply. Even if all your reference material is in Malay, if the question is in English, translate your full answer into English.
+   - NEVER switch languages mid-response. If you start in English, finish in English.
 
 4. ALWAYS structure EVERY response in this exact format, regardless of language:
 
