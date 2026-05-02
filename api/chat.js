@@ -37,6 +37,7 @@ export default async function handler(req, res) {
 
    IMPORTANT FORMATTING RULES:
    - ALWAYS use exactly these four sections in this order for EVERY response
+   - CRITICAL: If your response does not contain [JAWAPAN RINGKAS], [PENERANGAN], [RUJUKAN] and [DISCLAIMER] markers, it is WRONG. Rewrite it with the markers. NO EXCEPTIONS. Even for simple yes/no answers, you MUST use all four sections. Even for greetings or out-of-scope answers, you MUST use all four sections.
    - NEVER skip any section even if the answer is simple
    - If replying in English, translate ALL section headers AND the disclaimer to English using <b>...</b>:
      <b>BRIEF ANSWER</b>, <b>EXPLANATION</b>, <b>REFERENCE</b>, <b>DISCLAIMER</b>
