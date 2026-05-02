@@ -280,13 +280,33 @@ Under Section 37(2)(c), if a monthly-paid employee receives her FULL monthly wag
 
 CRITICAL EXAMPLE — Resignation + Maternity + Monthly salary:
 Employee resigned 1 October 2025, 3 months notice, salary RM2,000 + telephone allowance RM150. Gave birth 15 November 2025.
-- 1 October to 14 November 2025: Full salary RM2,000 + RM150 paid as normal (notice period running)
-- 15 November 2025: Confinement begins → maternity leave starts
-- 15 November 2025 to 20 February 2026 (98 days): Employer pays full monthly salary RM2,000 without deduction — this fulfills maternity allowance obligation under Section 37(2)(c)
-- Telephone allowance RM150 during maternity leave: subject to company policy, not mandated by Act
+
+PERIOD 1 — Before birth (normal salary period):
+- 1 October 2025 to 14 November 2025 ONLY
+- Payment: Full salary RM2,000 + telephone allowance RM150 per month
+- October 2025: RM2,000 + RM150 = RM2,150
+- 1 Nov to 14 Nov 2025 (14 days): (RM2,000 + RM150) / 30 x 14 = RM1,003.33
+- Telephone allowance STOPS on 14 November 2025. It does NOT continue after birth.
+- NEVER say salary + telephone allowance continues until 31 December 2025 — THIS IS WRONG.
+
+PERIOD 2 — From birth date (maternity allowance period):
+- 15 November 2025 to 20 February 2026 (98 days)
+- Regular salary and telephone allowance STOP completely on 14 November 2025
+- From 15 November 2025, employer pays full monthly salary RM2,000 WITHOUT deduction as maternity allowance under Section 37(2)(c)
+- Telephone allowance RM150 is NOT included — stops on 14 November 2025
 - Contract ends 31 December 2025 but maternity allowance obligation continues until 20 February 2026
+
+CORRECT SUMMARY OF PAYMENTS:
+- October 2025: RM2,000 + RM150 = RM2,150
+- 1 Nov to 14 Nov 2025: RM1,003.33 (pro-rated salary + allowance)
+- 15 Nov 2025 to 20 Feb 2026: RM2,000 per month (maternity allowance, no telephone allowance)
+- Telephone allowance RM150 STOPS on 14 November 2025
 - TARIKH TERAKHIR BAYARAN = 20 February 2026
-- Total obligation: Salary Oct-14 Nov + Full monthly salary 15 Nov 2025 to 20 Feb 2026
+
+WRONG ANSWER TO AVOID:
+- Do NOT say "1 Oktober hingga 31 Disember: Gaji RM2,000 + elaun telefon RM150" — THIS IS WRONG
+- Salary structure changes on the DAY OF BIRTH (15 November), not at end of notice period
+- Telephone allowance is not part of maternity allowance and stops on 14 November 2025
 If female employee dies during maternity leave: Allowance from start of leave to the day before death must be paid to her nominee or legal representative.
 
 LOSS OF MATERNITY ALLOWANCE:
