@@ -512,16 +512,48 @@ EMPLOYEE IS NOT ENTITLED to termination/lay-off benefits if:
 - Employer offered new contract at least 7 days before termination on terms no less favourable but employee unreasonably refused
 - Employee left before end of notice period without employer's consent
 - Employee left without paying wages in lieu of notice
-MINIMUM TERMINATION/LAY-OFF BENEFIT AMOUNTS:
+
+MINIMUM TERMINATION/LAY-OFF BENEFIT RATES:
 - Less than 2 years of service: 10 days' wages per year
 - 2 years or more but less than 5 years: 15 days' wages per year
 - 5 years or more: 20 days' wages per year
 (Pro-rated for incomplete years, rounded to nearest month.)
-FORMULA for 1 day wages: = Total wages (including allowances) for the last 12 months / 365 days
+
+CRITICAL — FORMULA FOR 1 DAY WAGES (Regulation 6(2), Employment (Termination and Lay-Off Benefits) Regulations 1980):
+1 day wages = Total wages for the last 12 completed months / 365 days
+This is NOT the same as monthly salary / 26. The divisor is always 365, not 26.
+
+WHAT IS INCLUDED in "total wages for last 12 months":
+INCLUDE: Basic salary, overtime payment
+EXCLUDE: Travelling allowance, bonus (annual bonus), any allowance that is excluded under Section 2 wages definition
+
+TERMINATION BENEFIT FORMULA:
+Termination benefit = (Total wages last 12 months / 365) x days per year x years of service
+
+CRITICAL EXAMPLE — Termination benefits calculation:
+Employee salary RM3,000/month, 4 years service, business closure.
+- Rate: 4 years = 2 years or more but less than 5 years → 15 days per year
+- Total wages last 12 months = RM3,000 x 12 = RM36,000 (basic salary only, no OT, no allowances stated)
+- 1 day wages = RM36,000 / 365 = RM98.63
+- Termination benefit = RM98.63 x 15 days x 4 years = RM5,917.81
+- Payment must be made within 7 days of last day of service
+
+WRONG FORMULA TO AVOID:
+- Do NOT use RM3,000 / 26 = RM115.38 as daily rate for termination benefits
+- The ÷26 formula is for ORP (ordinary rate of pay) used in OT/rest day/public holiday calculations ONLY
+- For termination benefits, ALWAYS use: Total wages 12 months / 365
+
+DAVID EXAMPLE (from Regulations 1980 training material):
+David served 8.3 years. Last 12 months wages:
+- Basic salary total: RM32,700
+- Overtime total: RM7,689.50
+- Travel allowance: RM6,000 → EXCLUDED
+- Bonus: RM7,500 → EXCLUDED
+- Total included wages = RM32,700 + RM7,689.50 = RM40,389.50
+- 1 day wages = RM40,389.50 / 365 = RM110.65
+- Rate: 8.3 years = 5 years or more → 20 days per year
+- Termination benefit = RM110.65 x 20 x 8.3 = RM18,368.92
 Payment must be made within 7 DAYS of the last day of service.
-Example: David served 8.3 years. Last 12 months wages = RM32,700 + RM7,689.50 overtime.
-1 day wage = (RM32,700 + RM7,689.50) / 365 = RM110.65
-Termination benefit = RM110.65 x 20 days x 8.3 years = RM18,368.92
 
 --- SECTION 60K & 60KA: EMPLOYMENT OF FOREIGN EMPLOYEES ---
 Employer CANNOT employ a foreign employee without PRIOR APPROVAL from the Director General.
