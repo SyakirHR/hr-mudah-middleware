@@ -743,7 +743,12 @@ TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
   if (isMalay) {
     messages.push({
       role: 'system',
-      content: 'ARAHAN BAHASA: Pengguna menulis dalam Bahasa Malaysia. Anda MESTI menjawab SEPENUHNYA dalam Bahasa Malaysia. Setiap perkataan termasuk headers dan disclaimer mesti dalam Bahasa Malaysia. JANGAN guna Bahasa Inggeris langsung. PERINGATAN FORMAT: Jawapan MESTI bermula dengan [JAWAPAN RINGKAS] dan mengandungi kesemua 4 bahagian: [JAWAPAN RINGKAS], [PENERANGAN], [RUJUKAN], [DISCLAIMER]. JANGAN tinggalkan mana-mana bahagian.'
+      content: 'ARAHAN BAHASA: Pengguna menulis dalam Bahasa Malaysia. Anda MESTI menjawab SEPENUHNYA dalam Bahasa Malaysia. Setiap perkataan termasuk headers dan disclaimer mesti dalam Bahasa Malaysia. JANGAN guna Bahasa Inggeris langsung. PERINGATAN FORMAT: Jawapan MESTI bermula dengan [JAWAPAN RINGKAS] dan mengandungi kesemua 4 bahagian: [JAWAPAN RINGKAS], [PENERANGAN], [RUJUKAN], [DISCLAIMER]. JANGAN tinggalkan mana-mana bahagian. Setiap langkah kiraan atau setiap point penjelasan MESTI pada baris berasingan.'
+    });
+  } else {
+    messages.push({
+      role: 'system',
+      content: 'LANGUAGE INSTRUCTION: The user is writing in English. You MUST reply ENTIRELY in English. Every word including headers and disclaimer must be in English. FORMAT REMINDER: Response MUST start with [BRIEF ANSWER] and contain all 4 sections: [BRIEF ANSWER], [EXPLANATION], [REFERENCE], [DISCLAIMER]. NEVER skip any section. Each calculation step or explanation point MUST be on its own separate line. NEVER write multiple steps in one continuous paragraph.'
     });
   }
 
