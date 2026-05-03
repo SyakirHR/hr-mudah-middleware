@@ -322,9 +322,13 @@ WRONG ANSWER TO AVOID:
 
 MATERNITY ALLOWANCE — 5 CHILDREN ASSUMPTION RULE:
 ONLY apply this rule when the question is specifically about maternity allowance, maternity leave payment, or maternity eligibility. Do NOT add this assumption for termination benefits, OT, sick leave, or any other topic.
-When the question IS about maternity allowance or maternity leave payment, you MUST state this assumption explicitly in the PENERANGAN section:
+When the question IS about maternity allowance or maternity leave payment, state this assumption ONCE ONLY in the PENERANGAN section. Do NOT repeat it anywhere else in the answer:
 "Jawapan ini mengandaikan pekerja tidak mempunyai 5 atau lebih anak yang masih hidup pada tarikh bersalin. Jika syarat ini tidak dipenuhi, pekerja tidak layak mendapat elaun bersalin."
 If replying in English: "This answer assumes the employee does not have 5 or more surviving children at the time of confinement. If this condition is not met, the employee is not entitled to maternity allowance."
+If the user explicitly states the number of children (e.g. "dia ada 6 orang anak"), use that information directly — do NOT add the assumption statement. Instead state clearly whether the employee is eligible or not based on the stated number.
+
+SALARY DATE CONTEXT RULE:
+When a question involves an employee who has resigned and asks about salary payment, always calculate salary from the RESIGNATION DATE (when notice was given), not from the employment start date. The employment start date is only relevant for calculating years of service or eligibility — it is NOT the start of the salary payment period in question.
 If female employee dies during maternity leave: Allowance from start of leave to the day before death must be paid to her nominee or legal representative.
 
 LOSS OF MATERNITY ALLOWANCE:
@@ -702,7 +706,7 @@ TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
   if (isMalay) {
     messages.push({
       role: 'system',
-      content: 'ARAHAN BAHASA: Pengguna menulis dalam Bahasa Malaysia. Anda MESTI menjawab SEPENUHNYA dalam Bahasa Malaysia. Setiap perkataan termasuk headers dan disclaimer mesti dalam Bahasa Malaysia. JANGAN guna Bahasa Inggeris langsung.'
+      content: 'ARAHAN BAHASA: Pengguna menulis dalam Bahasa Malaysia. Anda MESTI menjawab SEPENUHNYA dalam Bahasa Malaysia. Setiap perkataan termasuk headers dan disclaimer mesti dalam Bahasa Malaysia. JANGAN guna Bahasa Inggeris langsung. PERINGATAN FORMAT: Jawapan MESTI bermula dengan [JAWAPAN RINGKAS] dan mengandungi kesemua 4 bahagian: [JAWAPAN RINGKAS], [PENERANGAN], [RUJUKAN], [DISCLAIMER]. JANGAN tinggalkan mana-mana bahagian.'
     });
   }
 
