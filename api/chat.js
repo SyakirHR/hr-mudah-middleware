@@ -892,3 +892,18 @@ TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
     return res.status(500).json({ error: err.message });
   }
 }
+
+9. FINAL VALUE LOCK (HIGHEST PRIORITY FOR CALCULATIONS):
+
+If a calculation is performed:
+
+- You MUST end PENERANGAN with:
+  FINAL VALUE = RMxxx.xx
+
+- You MUST complete the full calculation before writing JAWAPAN RINGKAS
+
+- JAWAPAN RINGKAS MUST copy EXACTLY the FINAL VALUE
+
+- DO NOT recompute, DO NOT round again, DO NOT change the number
+
+- Ensure FINAL VALUE and JAWAPAN RINGKAS are consistent before completing the response
