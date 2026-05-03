@@ -73,6 +73,7 @@ export default async function handler(req, res) {
      * User asks 'berapa hari cuti?' → state the number of days only. Do NOT mention forfeiture rules or procedures unless asked.
      * Any extra information not asked = REMOVE IT.
    - Keep JAWAPAN RINGKAS to 1-2 sentences maximum — direct and to the point
+   - CRITICAL: If your answer involves a calculation, the amount stated in JAWAPAN RINGKAS MUST match the final amount concluded in PENERANGAN. NEVER state a different amount in JAWAPAN RINGKAS from what is calculated in PENERANGAN. If showing two scenarios, state both amounts in JAWAPAN RINGKAS.
    - PENERANGAN elaborates ONLY on what was asked. Nothing more. Nothing extra.
 
 5. If the answer is not found in the knowledge base, say in the same language as the question that you do not have that information in your database.
@@ -415,6 +416,29 @@ Salary: RM3,000/month | Normal hours: 8 hours/day | Worked: 10 hours on rest day
 Ordinary rate/day = RM3,000 / 26 = RM115.38
 Hourly rate = RM115.38 / 8 = RM14.42
 Payment = RM115.38 (8 normal hours at 1x) + (RM14.42 x 2.0 x 2 hours OT) = RM115.38 + RM57.68 = RM173.06
+
+CRITICAL — OT AMBIGUITY RULE FOR REST DAY AND PUBLIC HOLIDAY:
+When a user says "saya kerja OT X jam pada rest day/public holiday" or "I worked OT X hours on rest day/public holiday", the meaning of "OT" is ambiguous. It could mean:
+- Scenario A: X hours is the TOTAL hours worked on that day
+- Scenario B: X hours is worked AFTER completing normal working hours (true overtime)
+
+Since these give different calculations, ALWAYS show BOTH scenarios in your answer without asking for clarification.
+
+FORMAT for both scenarios:
+[JAWAPAN RINGKAS]: State both possible amounts clearly.
+[PENERANGAN]: Show Scenario A calculation first, then Scenario B calculation.
+
+EXAMPLE — User says "kerja OT 5 jam pada rest day, gaji RM3,000":
+Ordinary rate/day = RM3,000 / 26 = RM115.38
+Hourly rate = RM115.38 / 8 = RM14.42
+
+Scenario A — Jika 5 jam adalah JUMLAH jam bekerja pada hari rehat:
+5 jam > separuh waktu biasa (4 jam) tetapi < 8 jam → bayaran = 1x ORP = RM115.38
+
+Scenario B — Jika 5 jam adalah kerja SELEPAS waktu biasa (OT sebenar selepas 8 jam):
+5 jam OT x RM14.42 x 2 = RM144.20
+
+JAWAPAN RINGKAS should say: "Bergantung kepada maksud 'OT': jika 5 jam adalah jumlah jam bekerja = RM115.38; jika 5 jam adalah OT selepas waktu biasa = RM144.20."
 
 --- SECTION 60A: HOURS OF WORK ---
 An employee shall NOT be required to work:
@@ -822,7 +846,7 @@ TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
 
     // Convert newlines to <br>, then ensure headers always have a <br> after them
     htmlAnswer = htmlAnswer.replace(/\n/g, '<br>');
-    htmlAnswer = htmlAnswer.replace(/<\/b>(<br>)*/g, '</b><br>');
+    htmlAnswer = htmlAnswer.replace(/<\/b>(<br>)*/g, '</b>');
     htmlAnswer = htmlAnswer.replace(/(<br>){3,}/g, '<br><br>');
 
     if (!htmlAnswer.trim()) { htmlAnswer = rawAnswer.replace(/\n/g, '<br>'); }
