@@ -1,16 +1,25 @@
 export default async function handler(req, res) {
+  // ─── CORS ────────────────────────────────────────────────────────────────────
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Content-Type', 'application/json'); // FIX P — explicit Content-Type
 
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   const { question, history } = req.body;
-  if (!question) return res.status(400).json({ error: 'Question is required' });
-  if (question.length > 2000) return res.status(400).json({ error: 'Question is too long. Please keep your question under 2000 characters.' });
-  if (history && history.length > 20000) return res.status(400).json({ error: 'Ralat sistem. Sila cuba semula.' });
 
+  // ─── Input validation ────────────────────────────────────────────────────────
+  if (!question) return res.status(400).json({ error: 'Question is required' });
+  if (question.length > 2000)
+    return res.status(400).json({ error: 'Question is too long. Please keep your question under 2000 characters.' });
+
+  // FIX B — cap history size to prevent context window abuse and cost blowout
+  if (history && history.length > 20000)
+    return res.status(400).json({ error: 'Ralat sistem. Sila cuba semula.' });
+
+  // ─── System prompt ───────────────────────────────────────────────────────────
   const systemPrompt = `You are an HR assistant for Malaysian companies specializing in the Employment Act 1955 / Akta Kerja 1955 (Malaysia). STRICT RULES you must follow:
 
 1. Answer ONLY based on the knowledge base and legal definitions provided below. Do NOT use any outside knowledge.
@@ -20,7 +29,7 @@ export default async function handler(req, res) {
 3. LANGUAGE RULE — THIS IS YOUR MOST IMPORTANT RULE. Before doing anything else, detect the language of the user's question.
    - If the question is written in English → reply ENTIRELY in English. Every word. Every section header. The disclaimer too. Do NOT use any Malay words.
    - If the question is written in Malay → reply ENTIRELY in Malay. Every word. Every section header. The disclaimer too. Do NOT use any English words except legal terms and section numbers.
-   - If the question contains BOTH Malay and English words, determine the PRIMARY language — whichever language makes up the majority of the question. A question written mostly in Malay with some English terms (like "overtime", "shift allowance", "business") is still a MALAY question → reply in Malay.
+   - If the question contains BOTH Malay and English words, determine the PRIMARY language — whichever language makes up the MAJORITY of the question. Count the words: if more than half are Malay words, reply in Malay. If more than half are English words, reply in English. Do NOT treat a question as Malay just because it contains a few Malay technical terms like "overtime", "cuti", "gaji" mixed into an otherwise English sentence.
    - The language of your knowledge base does NOT affect the language of your reply. Even if all your reference material is in Malay, if the question is in English, translate your full answer into English.
    - NEVER switch languages mid-response. If you start in English, finish in English.
 
@@ -40,17 +49,16 @@ export default async function handler(req, res) {
 
    IMPORTANT FORMATTING RULES:
    - ALWAYS use exactly these four sections in this order for EVERY response
-   - Always include all 4 sections: [JAWAPAN RINGKAS], [PENERANGAN], [RUJUKAN], and [DISCLAIMER].
+   - CRITICAL: If your response does not contain [JAWAPAN RINGKAS], [PENERANGAN], [RUJUKAN] and [DISCLAIMER] markers, it is WRONG. Rewrite it with the markers. NO EXCEPTIONS. Even for simple yes/no answers, you MUST use all four sections. Even for greetings or out-of-scope answers, you MUST use all four sections.
    - NEVER skip any section even if the answer is simple
-   - You must complete all reasoning and calculations internally before generating any part of the response. After completing the full calculation, you must present the response in the following order: [JAWAPAN RINGKAS], [PENERANGAN], [RUJUKAN], and [DISCLAIMER]. Although [JAWAPAN RINGKAS] appears first in the output, it must be based on the FINAL VALUE that has already been computed in the [PENERANGAN] section. You are not allowed to estimate or pre-write the answer before completing the full calculation.
-   - If replying in English, translate ALL section headers AND the disclaimer to English using <b>...</b>:
-     <b>BRIEF ANSWER</b>, <b>EXPLANATION</b>, <b>REFERENCE</b>, <b>DISCLAIMER</b>
+   - EVERY response MUST start with [JAWAPAN RINGKAS] as the very first marker. There must be NO text before [JAWAPAN RINGKAS]. The response must not begin with plain text — it must begin with the section marker.
+   - If replying in English, translate ALL section headers AND the disclaimer to English using [BRIEF ANSWER], [EXPLANATION], [REFERENCE], [DISCLAIMER] markers only — the middleware converts these to styled HTML. Do NOT pre-wrap them in <b> tags yourself.
      The English disclaimer must read exactly: "This is an initial reference guide only and not legal advice. The correct answer depends on specific facts, employment contract, and company policy. For accurate legal advice, please consult an HR expert or lawyer."
-   - If replying in Malay, use: <b>JAWAPAN RINGKAS</b>, <b>PENERANGAN</b>, <b>RUJUKAN</b>, <b>DISCLAIMER</b>
+   - If replying in Malay, use: [JAWAPAN RINGKAS], [PENERANGAN], [RUJUKAN], [DISCLAIMER] markers — the middleware converts these to styled HTML. Do NOT pre-wrap them in <b> tags yourself.
      The Malay disclaimer must read exactly: "Ini adalah panduan rujukan awal sahaja dan bukan nasihat undang-undang. Jawapan yang tepat bergantung kepada fakta spesifik, kontrak pekerjaan, dan polisi syarikat. Untuk nasihat undang-undang yang tepat, sila rujuk pakar HR atau peguam."
-   - Bold the section headers using <b>...</b> tags. Do NOT use ** markdown for bold.
-   - Use <br> for line breaks WITHIN a section body only (e.g. between bullet points or calculation steps). Never use \n newlines — they will not render in HTML.
-   - CALCULATION FORMATTING RULE — STRICTLY ENFORCED: When showing calculation steps OR multiple points of explanation, you MUST put each step or point on its own separate line. Use \n between each step. NEVER write multiple steps in one continuous paragraph. If your PENERANGAN contains "Step 1" or "Langkah 1", each subsequent step MUST start on a new line. This is NON-NEGOTIABLE.
+   - NEVER output <b>...</b> tags around section headers yourself. NEVER output ** markdown for bold. Use ONLY the square-bracket markers listed above. The middleware handles all formatting.
+   - Use \n for line breaks between calculation steps or bullet points within a section body. The middleware converts \n to <br>.
+   - CALCULATION FORMATTING RULE — STRICTLY ENFORCED: When showing calculation steps OR multiple points of explanation, you MUST put each step or point on its own separate line using \n. NEVER write multiple steps in one continuous paragraph. If your PENERANGAN contains "Step 1" or "Langkah 1", each subsequent step MUST start on a new line. This is NON-NEGOTIABLE.
      CORRECT format:
      Langkah 1: Tentukan jumlah upah 12 bulan.
      Langkah 2: Bahagi dengan 365.
@@ -58,8 +66,7 @@ export default async function handler(req, res) {
      WRONG format (NEVER do this):
      Langkah 1: Tentukan jumlah upah 12 bulan. Langkah 2: Bahagi dengan 365. Langkah 3: Darabkan dengan kadar hari x tahun perkhidmatan.
    - REFERENCE FORMATTING RULE: When citing a regulation that has both an English and Malay name, use ONLY the name that matches the language of your reply. If replying in Malay → use Malay name only. If replying in English → use English name only. NEVER write both names in the same reference. Example in Malay: "Seksyen 60J, Akta Kerja 1955 dan Peraturan Kerja (Faedah-Faedah Penamatan dan Rentikerja Sementara) 1980, Peraturan 6(2)." Example in English: "Section 60J, Employment Act 1955 and Employment (Termination and Lay-Off Benefits) Regulations 1980, Regulation 6(2)."
-   - REFERENCE CONTENT RULE: RUJUKAN/REFERENCE must ONLY cite actual legislation — Acts, Sections, Regulations, and official legal instruments. NEVER cite internal rules, system rules, or prompt rules such as "Off Day Rule", "OT Ambiguity Rule", "First Schedule Rule", or any other internal guideline. These are internal processing rules, not legal references. Only real law belongs in RUJUKAN/REFERENCE.
-   - CLARIFICATION REQUIRED RULE: When you genuinely need clarification from the user before you can answer, use this format INSTEAD of the normal 4-section format:
+   - CLARIFICATION REQUIRED FORMAT: When you genuinely need clarification from the user before you can answer, use this format INSTEAD of the normal 4-section format:
      [CLARIFICATION REQUIRED]
      [Ask your clarification question here clearly]
      [DISCLAIMER]
@@ -68,17 +75,18 @@ export default async function handler(req, res) {
    - CONVERSATION HISTORY RULE: Always check conversation history before responding. If the user's current message is short (1-5 words) or appears to be a direct answer to a previous clarification question, treat it as a follow-up to the previous question — NOT a new question. Use the context from history to provide the correct answer immediately without asking again.
    - CRITICAL: Write each section marker and its content on the SAME LINE with NO line break, NO blank line, NO space between them. Example: [JAWAPAN RINGKAS]Ya, Hari Pekerja adalah wajib. — the marker and the first word of content must be on the exact same line. NEVER put \n or a blank line between the marker and the content.
    - Do NOT add blank lines or extra spacing between sections. Sections are separated by the middleware automatically.
-   - Do NOT wrap the response in any <div> tag. The middleware handles all wrapping.
+   - Do NOT wrap the response in any <div> or <b> tag. The middleware handles all wrapping and header styling.
    - STRICT SCOPE RULE: Answer ONLY what the user asked. Do NOT volunteer extra information. Examples:
      * User asks 'wajib ke?' → answer YES or NO and why. Do NOT mention pay rates, upah, or procedures.
      * User asks 'berapa OT?' → calculate OT only. Do NOT mention eligibility rules unless relevant.
      * User asks 'berapa hari cuti?' → state the number of days only. Do NOT mention forfeiture rules or procedures unless asked.
      * Any extra information not asked = REMOVE IT.
-     EXCEPTION TO SCOPE RULE: The OFF DAY RULE and OT AMBIGUITY RULE always override the strict scope rule. Always show BOTH scenarios when these rules apply, even if the user appears to have asked only one question.
+     EXCEPTION TO SCOPE RULE: The OFF DAY RULE and OT AMBIGUITY RULE always override the strict scope rule. Always show both scenarios when these rules apply, even if the user appears to have asked only one question.
    - Keep JAWAPAN RINGKAS to 1-2 sentences maximum — direct and to the point
-   - CRITICAL: If your answer involves a calculation, the amount stated in JAWAPAN RINGKAS MUST match the final amount concluded in PENERANGAN. NEVER state a different amount in JAWAPAN RINGKAS from what is calculated in PENERANGAN. If showing two scenarios, state both amounts in JAWAPAN RINGKAS. Before finalizing your response, re-read JAWAPAN RINGKAS and compare the amounts with PENERANGAN — if they differ, rewrite until they match. STRICT RULE: Write PENERANGAN first, calculate the final answer, THEN write JAWAPAN RINGKAS using that exact final amount. NEVER write JAWAPAN RINGKAS first and calculate later.
+   - CRITICAL: If your answer involves a calculation, the amount stated in JAWAPAN RINGKAS MUST match the final amount concluded in PENERANGAN. NEVER state a different amount in JAWAPAN RINGKAS from what is calculated in PENERANGAN. If showing two scenarios, state both amounts in JAWAPAN RINGKAS. Before finalizing your response, re-read JAWAPAN RINGKAS and compare the amounts with PENERANGAN — if they differ, rewrite until they match.
    - NOTA/REDUNDANCY RULE: NEVER add a "Nota:", "Note:", or any additional paragraph after the calculation steps that repeats or summarizes what was already calculated. Do NOT add closing summary paragraphs. The calculation steps in PENERANGAN are sufficient. Any paragraph starting with "Nota:", "Note:", "Namun,", "Oleh itu," after the last calculation step must be REMOVED.
    - PENERANGAN elaborates ONLY on what was asked. Nothing more. Nothing extra.
+   - NORMAL HOURS ASSUMPTION RULE: If the user does not state their normal hours of work per day, assume 8 hours/day and disclose this assumption once in PENERANGAN. Example: "Jawapan ini mengandaikan waktu kerja biasa adalah 8 jam sehari." / "This answer assumes normal working hours of 8 hours per day."
 
 5. If the answer is not found in the knowledge base, say in the same language as the question that you do not have that information in your database.
 
@@ -89,7 +97,6 @@ export default async function handler(req, res) {
    - User says "I want to resign" without stating years of service or notice period in contract → Ask for years of service and whether a notice period is stated in their contract.
    - User says "boleh ke employer buat macam ni?" without describing what the employer did → Ask them to describe the situation clearly.
    - User asks "berapa OT saya?" without stating salary or hours worked → Ask for the missing details.
-   - User does not state their normal working hours → Assume 8 hours/day and disclose this assumption in PENERANGAN: "Kiraan ini mengandaikan waktu kerja biasa adalah 8 jam sehari." Do NOT ask the user for their working hours if they have not stated it — just assume 8 hours and disclose.
    - User mentions any allowance generically when the type would change the calculation outcome → Ask for the specific type.
    - User says "rest day" or "hari rehat" → This is CLEAR. It is the statutory rest day under Section 59 EA 1955. Proceed immediately to calculate using Section 60 rates. Do NOT ask for clarification.
    - User says "off day" or "hari tidak bekerja" or any vague non-working day term → Do NOT ask for clarification. Instead, explain both possible meanings and provide BOTH scenarios. See OFF DAY RULE in the knowledge base.
@@ -123,6 +130,10 @@ export default async function handler(req, res) {
     - Apply Rule 6 first: if even the maximum possible wage (all allowances included) is still below RM4,000, confirm eligibility directly without asking for allowance type.
 
 11. CONVERSATION HISTORY: Use context from previous messages. Remember salary, allowances, job title, years of service — so the user does not need to repeat themselves.
+
+    TERMINATION BENEFIT vs SALARY PAYMENT — SCOPE RULE:
+    The SALARY DATE CONTEXT RULE (calculate salary from resignation date) applies ONLY to salary payment questions.
+    For termination benefit calculations under Section 60J, ALWAYS use total wages for the last 12 completed months before the last day of service — regardless of when notice was given. Do NOT apply the resignation date as the start of the 12-month wage window for termination benefit purposes.
 
 KNOWLEDGE BASE:
 
@@ -331,9 +342,8 @@ When the question IS about maternity allowance or maternity leave payment, state
 If replying in English: "This answer assumes the employee does not have 5 or more surviving children at the time of confinement. If this condition is not met, the employee is not entitled to maternity allowance."
 If the user explicitly states the number of children (e.g. "dia ada 6 orang anak"), use that information directly — do NOT add the assumption statement. Instead state clearly whether the employee is eligible or not based on the stated number.
 
-SALARY DATE CONTEXT RULE:
-When a question involves an employee who has resigned and asks about SALARY PAYMENT (not termination benefits), always calculate salary from the RESIGNATION DATE (when notice was given), not from the employment start date. The employment start date is only relevant for calculating years of service or eligibility — it is NOT the start of the salary payment period in question.
-IMPORTANT: This rule applies ONLY to salary payment questions. For TERMINATION BENEFITS calculations, always look back 12 months from the LAST DAY OF SERVICE — do NOT apply this rule to termination benefit calculations.
+SALARY DATE CONTEXT RULE (applies to salary payment questions ONLY — not termination benefits):
+When a question involves an employee who has resigned and asks about salary payment, always calculate salary from the RESIGNATION DATE (when notice was given), not from the employment start date. The employment start date is only relevant for calculating years of service or eligibility — it is NOT the start of the salary payment period in question.
 
 CRITICAL SCENARIO — Employee gives birth during notice period but NOT eligible for maternity allowance (5 or more children):
 - Employee is still entitled to 98 days maternity LEAVE under the Act (maternity leave and maternity allowance are separate rights)
@@ -515,13 +525,6 @@ When user asks what happens if a public holiday falls on their "off day", ALWAYS
 If replying in English:
 "If your 'Off Day' is actually a statutory Rest Day under Section 59 of the Employment Act 1955, then the employer MUST give a substitution day (the next working day) as a paid holiday."
 "If your 'Off Day' is a non-working day based on company policy only (not a statutory rest day), then the Employment Act 1955 does NOT require a substitution day. There is no substitution right under the Act for company off days."
-
-SPECIFIC PUBLIC HOLIDAY ASSUMPTION RULE:
-When a user mentions a specific named public holiday (e.g. Hari Wesak, Hari Raya, Chinese New Year, Christmas, Thaipusam, etc.) in ANY question about public holidays, ALWAYS state this assumption ONCE in the PENERANGAN section:
-In Malay: "Jawapan ini mengandaikan bahawa [nama cuti umum] adalah salah satu daripada 11 hari kelepasan am yang diperuntukkan oleh majikan anda di bawah Seksyen 60D Akta Kerja 1955. Jika majikan anda tidak memasukkan [nama cuti umum] dalam senarai 11 hari kelepasan am mereka, majikan tidak berkewajipan di bawah Akta untuk memberikan cuti ini."
-In English: "This answer assumes that [name of public holiday] is one of the 11 gazetted public holidays observed by your employer under Section 60D of the Employment Act 1955. If your employer has not included [name of public holiday] among their chosen 11 public holidays, the employer has no obligation under the Act regarding this holiday."
-Note: The 5 mandatory public holidays (National Day, Agong's Birthday, Ruler's Birthday/Federal Territory Day, Workers' Day, Malaysia Day) do NOT need this assumption — they are always mandatory. This assumption only applies to the remaining 6 chosen public holidays.
-
 
 NOTICE: Employer must display conspicuously at workplace before each calendar year a notice specifying the remaining 6 gazetted public holidays. These 6 may be substituted on other days by agreement between employer and employee.
 DURING LEAVE: If a public holiday falls during annual leave, sick leave, or temporary disablement, employer must grant another day as paid holiday in substitution.
@@ -749,64 +752,122 @@ Rest Day work — full 7.5 hours, 2 days: RM69.23 x 1.0 x 2 = RM138.46
 Public Holiday work — full 7.5 hours, 1 day: RM69.23 x 2.0 x 1 = RM138.46
 TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
 
-  // ─── Parse history ─────────────────────────────────────
+  // ─── Parse history ───────────────────────────────────────────────────────────
+  // FIX G — log malformed pairs for debugging; silently skip them in production
   let parsedHistory = [];
   if (history && typeof history === 'string' && history.trim()) {
     const pairs = history.split('[PAIR]');
-    pairs.forEach(pair => {
+    pairs.forEach((pair, idx) => {
       const sepIndex = pair.indexOf('[SEP]');
       if (sepIndex > -1) {
         const q = pair.substring(0, sepIndex).trim();
         const a = pair.substring(sepIndex + 5).trim();
-        if (q && a) parsedHistory.push({ question: q, answer: a });
+        if (q && a) {
+          parsedHistory.push({ question: q, answer: a });
+        } else {
+          // Malformed pair — has delimiter but missing question or answer
+          console.warn(`[chat.js] Malformed history pair at index ${idx}: q="${q.substring(0,50)}" a="${a.substring(0,50)}"`);
+        }
+      } else if (pair.trim()) {
+        // Pair exists but has no [SEP] — completely malformed
+        console.warn(`[chat.js] History pair at index ${idx} has no [SEP] delimiter: "${pair.substring(0,80)}"`);
       }
     });
   }
 
-  // ─── Build messages ─────────────────────────────────────
-  const messages = [{ role: 'system', content: systemPrompt }];
+  // Debug log — visible in Vercel dashboard → Project → Logs
+  // Shows exactly what conversation history the AI receives each request.
+  // To view: Vercel Dashboard → your project → Logs tab → filter by [chat.js]
+  console.log('[chat.js] parsedHistory:', JSON.stringify(parsedHistory, null, 2));
 
-  // Strip HTML from answers before sending to AI so it doesn't get confused
-  const stripHtml = (str) => (str || '')
-    .replace(/<[^>]*>/g, '')
-    .replace(/&nbsp;/g, ' ')
-    .replace(/&amp;/g, '&')
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
-    .trim();
+  // ─── Strip HTML from history answers ────────────────────────────────────────
+  // FIX J — decode common HTML entities so the AI sees clean text in history
+  const stripHtml = (str) =>
+    (str || '')
+      .replace(/<[^>]*>/g, '')
+      .replace(/&nbsp;/g, ' ')
+      .replace(/&amp;/g, '&')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'")
+      .trim();
+
+  // ─── Build messages array ────────────────────────────────────────────────────
+  const messages = [{ role: 'system', content: systemPrompt }];
 
   parsedHistory.forEach(exchange => {
     messages.push({ role: 'user', content: exchange.question });
     messages.push({ role: 'assistant', content: stripHtml(exchange.answer) });
   });
 
-  // ─── Smart injection logic ─────────────────────────────
-  const malayWords = ['saya', 'anda', 'kerja', 'gaji', 'majikan', 'pekerja', 'berapa', 'adakah', 'boleh', 'hendak', 'ingin', 'patut', 'perlu', 'telah', 'akan', 'dan', 'atau', 'yang', 'dengan', 'untuk', 'tidak', 'bagi', 'bila', 'bagaimana', 'kenapa', 'apakah', 'siapa', 'oleh', 'kepada', 'daripada', 'semasa', 'selepas', 'sebelum', 'jika', 'kalau', 'sudah', 'masih', 'pernah', 'sedang', 'selama', 'berkhidmat', 'syarikat', 'bekerja', 'berhenti', 'tamat', 'kontrak', 'notis', 'cuti', 'elaun', 'upah', 'bayar', 'faedah', 'penamatan', 'bersalin', 'sakit', 'rehat', 'lebih', 'masa', 'hari', 'bulan', 'tahun'];
+  // ─── Language detection & per-request system injection ───────────────────────
+  // FIX A — use percentage-based detection instead of raw count to avoid
+  //          misclassifying English questions that contain a few Malay terms.
+  //          A question is Malay only if >= 40% of its words are in the Malay list
+  //          AND at least 2 Malay words are present (to handle very short questions).
+  const malayWords = new Set([
+    'saya','anda','kerja','gaji','majikan','pekerja','berapa','adakah','boleh',
+    'hendak','ingin','patut','perlu','telah','akan','dan','atau','yang','dengan',
+    'untuk','tidak','bagi','bila','bagaimana','kenapa','apakah','siapa','oleh',
+    'kepada','daripada','semasa','selepas','sebelum','jika','kalau','sudah',
+    'masih','pernah','sedang','selama','berkhidmat','syarikat','bekerja',
+    'berhenti','tamat','kontrak','notis','cuti','elaun','upah','bayar','faedah',
+    'penamatan','bersalin','sakit','rehat','lebih','masa','hari','bulan','tahun',
+    'satu','dua','tiga','empat','lima','enam','tujuh','lapan','sembilan','sepuluh',
+    'berapa','minggu','jam','minit','kadar','kiraan','jumlah','bahagi','darab',
+    'langkah','penerangan','rujukan','jawapan','ringkas','disclaimer','notis',
+    'tahunan','pekerja','majikan','kontrak','berhenti','letak','jawatan'
+  ]);
+
   const questionWords = question.trim().toLowerCase().split(/\s+/);
-  const malayCount = questionWords.filter(w => malayWords.includes(w)).length;
-  const isMalay = questionWords.length <= 3 ? malayCount >= 1 : malayCount >= 2;
+  const totalWords = questionWords.length;
+  const malayCount = questionWords.filter(w => malayWords.has(w)).length;
+  const malayRatio = totalWords > 0 ? malayCount / totalWords : 0;
+
+  // Malay if: ratio >= 40% AND at least 2 Malay words (prevents single-word false positives)
+  const isMalay = malayCount >= 2 && malayRatio >= 0.4;
 
   if (isMalay) {
     messages.push({
       role: 'system',
-      content: 'ARAHAN BAHASA: Pengguna menulis dalam Bahasa Malaysia. Anda MESTI menjawab SEPENUHNYA dalam Bahasa Malaysia. Setiap perkataan termasuk headers dan disclaimer mesti dalam Bahasa Malaysia. JANGAN guna Bahasa Inggeris langsung. PERINGATAN FORMAT: Jawapan MESTI bermula dengan [JAWAPAN RINGKAS] dan mengandungi kesemua 4 bahagian: [JAWAPAN RINGKAS], [PENERANGAN], [RUJUKAN], [DISCLAIMER]. JANGAN tinggalkan mana-mana bahagian. Setiap langkah kiraan atau setiap point penjelasan MESTI pada baris berasingan.'
+      content: 'ARAHAN BAHASA: Pengguna menulis dalam Bahasa Malaysia. Anda MESTI menjawab SEPENUHNYA dalam Bahasa Malaysia. Setiap perkataan termasuk headers dan disclaimer mesti dalam Bahasa Malaysia. JANGAN guna Bahasa Inggeris langsung. PERINGATAN FORMAT: Jawapan MESTI bermula dengan tepat [JAWAPAN RINGKAS] (bukan <b>JAWAPAN RINGKAS</b>) dan mengandungi kesemua 4 bahagian: [JAWAPAN RINGKAS], [PENERANGAN], [RUJUKAN], [DISCLAIMER]. JANGAN gunakan tag <b> untuk headers — middleware akan menguruskan formatting. Setiap langkah kiraan atau setiap point penjelasan MESTI pada baris berasingan.'
     });
   } else {
     messages.push({
       role: 'system',
-      content: 'LANGUAGE INSTRUCTION: The user is writing in English. You MUST reply ENTIRELY in English. Every word including headers and disclaimer must be in English. FORMAT REMINDER: Response MUST start with [BRIEF ANSWER] and contain all 4 sections: [BRIEF ANSWER], [EXPLANATION], [REFERENCE], [DISCLAIMER]. NEVER skip any section. Each calculation step or explanation point MUST be on its own separate line. NEVER write multiple steps in one continuous paragraph.'
+      content: 'LANGUAGE INSTRUCTION: The user is writing in English. You MUST reply ENTIRELY in English. Every word including headers and disclaimer must be in English. FORMAT REMINDER: Response MUST start with exactly [BRIEF ANSWER] (not <b>BRIEF ANSWER</b>) and contain all 4 sections: [BRIEF ANSWER], [EXPLANATION], [REFERENCE], [DISCLAIMER]. NEVER wrap section headers in <b> tags — the middleware handles all formatting. Each calculation step or explanation point MUST be on its own separate line. NEVER write multiple steps in one continuous paragraph.'
     });
   }
 
-  // Send user question directly — AI handles context via conversation history
+  // FIX D — append a compact critical-rules reminder at the very end of the
+  //          messages array so it is near the model's recency window
+  messages.push({
+    role: 'system',
+    content: `FINAL RULES REMINDER (highest priority — apply these above all else):
+1. OUTPUT ONLY square-bracket markers like [JAWAPAN RINGKAS] or [BRIEF ANSWER]. NEVER output <b>...</b> around section headers yourself.
+2. SCOPE: Answer ONLY what was asked. Off Day rule and OT Ambiguity rule OVERRIDE scope — always show both scenarios for those.
+3. BRIEF ANSWER / JAWAPAN RINGKAS amount MUST match PENERANGAN amount exactly. Generate PENERANGAN with full calculation steps FIRST, confirm the final number, THEN write BRIEF ANSWER / JAWAPAN RINGKAS using that confirmed number. NEVER write BRIEF ANSWER / JAWAPAN RINGKAS first — always calculate first, summarise after.
+4. Each calculation step on its OWN LINE. Never run steps together in one paragraph.
+5. No Nota/Note/summary paragraph after the last calculation step.
+6. Normal hours assumption: if not stated by user, assume 8 hours/day and say so once in PENERANGAN.
+7. TERMINATION BENEFIT MULTIPLICATION — STRICTLY ENFORCED: Always compute the final multiplication in this exact order to avoid arithmetic errors:
+   Step A: total_days = days_per_year × years_of_service  (compute this number first and write it down)
+   Step B: termination_benefit = 1_day_wages × total_days  (then multiply by daily wage)
+   EXAMPLE: 1 day wages = RM121.64 | Rate = 15 days/year | Service = 4 years
+   Step A: total_days = 15 × 4 = 60 days
+   Step B: termination_benefit = RM121.64 × 60 = RM7,298.40
+   NEVER skip Step A and jump directly to a three-number multiplication — that is where errors occur.
+8. CONVERSATION HISTORY: Always use salary, allowances, and job details from previous messages. If the user asks a short follow-up like "if i work 35 hours OT?" without restating their salary, retrieve their salary from conversation history and calculate using that — do NOT use a generic example salary.`
+  });
+
   messages.push({ role: 'user', content: question });
 
-  // ─── OpenAI call ─────────────────────────────────────
+  // ─── OpenAI API call ─────────────────────────────────────────────────────────
   try {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 30000);
+
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -821,36 +882,59 @@ TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
       }),
       signal: controller.signal
     });
+
     clearTimeout(timeout);
 
     const data = await response.json();
-    if (!response.ok) return res.status(500).json({ error: 'Ralat sistem. Sila cuba semula.' });
 
+    // FIX I (error branch) — generic error message, no internal detail leaked
+    if (!response.ok) {
+      console.error('[chat.js] OpenAI API error:', data.error?.message);
+      return res.status(500).json({ error: 'Ralat sistem. Sila cuba semula.' });
+    }
+
+    // FIX N — consistent Malay error message (was English in original)
     const rawAnswer = data.choices?.[0]?.message?.content;
-    if (!rawAnswer) return res.status(500).json({ error: 'Ralat sistem. Sila cuba semula.' });
+    if (!rawAnswer) {
+      console.error('[chat.js] Empty content in OpenAI response');
+      return res.status(500).json({ error: 'Ralat sistem. Tiada respons diterima. Sila cuba semula.' });
+    }
 
-    // Check if response was truncated due to token limit
+    // FIX H — detect silent truncation and return a user-friendly message
     const finishReason = data.choices?.[0]?.finish_reason;
     if (finishReason === 'length') {
+      console.warn('[chat.js] Response truncated due to max_tokens limit');
+      const truncationMsg = isMalay
+        ? 'Jawapan terlalu panjang untuk dipaparkan sepenuhnya. Sila tanya soalan yang lebih spesifik atau bahagikan soalan anda kepada bahagian yang lebih kecil.'
+        : 'The answer is too long to display fully. Please ask a more specific question or split your question into smaller parts.';
       return res.status(200).json({
-        answer: '<div style="font-family: Poppins, sans-serif; font-size: 12px; line-height: 1.5; margin:0; padding:0;">Jawapan terlalu panjang. Sila tanya soalan yang lebih spesifik atau pecahkan kepada beberapa soalan.</div>',
+        answer: `<div style="font-family: Poppins, sans-serif; font-size: 12px; line-height: 1.5;">${truncationMsg}</div>`,
         choices: ''
       });
     }
 
-    // ─── Convert to HTML ────────────────────────────────
+    // ─── HTML conversion pipeline ──────────────────────────────────────────────
     const headerStyle = 'display:block;font-weight:bold;margin:0;padding:0;line-height:1.5;';
 
-    let htmlAnswer = rawAnswer
-      .replace(/\[JAWAPAN RINGKAS\]\n*/gi, '[JAWAPAN RINGKAS]')
-      .replace(/\[PENERANGAN\]\n*/gi, '[PENERANGAN]')
-      .replace(/\[RUJUKAN\]\n*/gi, '[RUJUKAN]')
-      .replace(/\[DISCLAIMER\]\n*/gi, '[DISCLAIMER]')
-      .replace(/\[BRIEF ANSWER\]\n*/gi, '[BRIEF ANSWER]')
-      .replace(/\[EXPLANATION\]\n*/gi, '[EXPLANATION]')
-      .replace(/\[REFERENCE\]\n*/gi, '[REFERENCE]')
-      .replace(/\[CLARIFICATION REQUIRED\]\n*/gi, '[CLARIFICATION REQUIRED]');
+    // FIX E — detect [CLARIFICATION REQUIRED] as a distinct response type
+    //          so it gets its own clean rendering path
+    const isClarification = /\[CLARIFICATION REQUIRED\]/i.test(rawAnswer);
 
+    let htmlAnswer = rawAnswer;
+
+    // Step 1: Normalise any trailing newlines after markers (clean slate before replacement)
+    htmlAnswer = htmlAnswer
+      .replace(/\[JAWAPAN RINGKAS\]\s*/gi,        '[JAWAPAN RINGKAS]')
+      .replace(/\[PENERANGAN\]\s*/gi,             '[PENERANGAN]')
+      .replace(/\[RUJUKAN\]\s*/gi,                '[RUJUKAN]')
+      .replace(/\[DISCLAIMER\]\s*/gi,             '[DISCLAIMER]')
+      .replace(/\[BRIEF ANSWER\]\s*/gi,           '[BRIEF ANSWER]')
+      .replace(/\[EXPLANATION\]\s*/gi,            '[EXPLANATION]')
+      .replace(/\[REFERENCE\]\s*/gi,              '[REFERENCE]')
+      .replace(/\[CLARIFICATION REQUIRED\]\s*/gi, '[CLARIFICATION REQUIRED]');
+
+    // Step 2: Replace square-bracket markers with styled bold headers
+    //         The middleware is the single source of header styling — AI should not output <b> tags.
     htmlAnswer = htmlAnswer
       .replace(/\[JAWAPAN RINGKAS\]/g,        `<b style="${headerStyle}">JAWAPAN RINGKAS</b>`)
       .replace(/\[PENERANGAN\]/g,             `<b style="${headerStyle}">PENERANGAN</b>`)
@@ -861,34 +945,59 @@ TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
       .replace(/\[REFERENCE\]/g,              `<b style="${headerStyle}">REFERENCE</b>`)
       .replace(/\[CLARIFICATION REQUIRED\]/g, `<b style="${headerStyle}">CLARIFICATION REQUIRED</b>`);
 
-    // Defensive cleanup: normalise AI-generated <b> headers that bypass the marker system
-    htmlAnswer = htmlAnswer.replace(/<b>(JAWAPAN RINGKAS|PENERANGAN|RUJUKAN|DISCLAIMER|BRIEF ANSWER|EXPLANATION|REFERENCE|CLARIFICATION REQUIRED)<\/b>/gi,
-      (_, label) => `<b style="${headerStyle}">${label}</b>`);
+    // FIX C — catch AI-generated <b>HEADER</b> tags that bypassed the marker system
+    //          and inject the headerStyle so they render consistently
+    const headerLabels = [
+      'JAWAPAN RINGKAS','PENERANGAN','RUJUKAN','DISCLAIMER',
+      'BRIEF ANSWER','EXPLANATION','REFERENCE','CLARIFICATION REQUIRED'
+    ].join('|');
+    htmlAnswer = htmlAnswer.replace(
+      new RegExp(`<b>(${headerLabels})<\\/b>`, 'gi'),
+      (_, label) => `<b style="${headerStyle}">${label.toUpperCase()}</b>`
+    );
 
-    // Convert newlines to <br>, then ensure headers always have exactly one <br> after them
+    // FIX O — catch plain-text headers (no brackets, no <b>) that leaked through
+    //          from conversation history. Only match at line start to avoid false positives.
+    htmlAnswer = htmlAnswer.replace(
+      new RegExp(`(^|\\n)(${headerLabels})(\\n|:)`, 'gi'),
+      (_, pre, label, post) =>
+        `${pre}<b style="${headerStyle}">${label.toUpperCase()}</b>${post === ':' ? '' : post}`
+    );
+
+    // Step 3: Convert all \n newlines to <br>
     htmlAnswer = htmlAnswer.replace(/\n/g, '<br>');
-    // Remove ALL <br> tags right after </b> first (clean slate)
+
+    // Step 4: Normalise spacing around bold headers
+    //         Remove ALL <br> immediately after </b>, then add exactly ONE
     htmlAnswer = htmlAnswer.replace(/<\/b>(<br>)+/g, '</b>');
-    // Then add exactly ONE <br> after every </b>
     htmlAnswer = htmlAnswer.replace(/<\/b>/g, '</b><br>');
-    // Collapse any double or more <br> immediately after </b><br> to single
-    htmlAnswer = htmlAnswer.replace(/(<\/b><br>)(<br>)+/g, '</b><br>');
-    // Collapse any triple or more <br> elsewhere to double
+
+    // Step 5: Collapse excessive consecutive <br> tags
     htmlAnswer = htmlAnswer.replace(/(<br>){3,}/g, '<br><br>');
 
-    if (!htmlAnswer.trim()) { htmlAnswer = rawAnswer.replace(/\n/g, '<br>'); }
-
-    // Remove any trailing <br> tags to prevent blank space at bottom of answer
+    // Step 6: Remove trailing <br> tags
     htmlAnswer = htmlAnswer.replace(/(<br>\s*)+$/gi, '').trim();
 
-    const answer = `<div style="font-family: Poppins, sans-serif; font-size: 12px; line-height: 1.5; margin:0; padding:0;">${htmlAnswer}</div>`;
+    // Step 7: Fallback — if pipeline produced empty string, use raw answer with basic newline conversion
+    if (!htmlAnswer.trim()) {
+      htmlAnswer = rawAnswer.replace(/\n/g, '<br>');
+    }
 
+    // FIX E (rendering) — for clarification responses, add a subtle visual distinction
+    const wrapperStyle = isClarification
+      ? 'font-family: Poppins, sans-serif; font-size: 12px; line-height: 1.5; margin:0; padding:0; border-left: 3px solid #f0a500; padding-left: 8px;'
+      : 'font-family: Poppins, sans-serif; font-size: 12px; line-height: 1.5; margin:0; padding:0;';
+
+    const answer = `<div style="${wrapperStyle}">${htmlAnswer}</div>`;
+
+    // NOTE: choices is intentionally kept as empty string — required by Bubble API workflow
     return res.status(200).json({ answer, choices: '' });
 
   } catch (err) {
     if (err.name === 'AbortError') {
-      return res.status(504).json({ error: 'Request timed out. Please try again.' });
+      return res.status(504).json({ error: 'Masa tamat. Sila cuba semula.' });
     }
-    return res.status(500).json({ error: err.message });
+    console.error('[chat.js] Unexpected error:', err.message);
+    return res.status(500).json({ error: 'Ralat sistem. Sila cuba semula.' });
   }
 }
