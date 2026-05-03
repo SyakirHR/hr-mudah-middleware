@@ -892,14 +892,3 @@ TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
     return res.status(500).json({ error: err.message });
   }
 }
-
-9. FINAL VALUE CONSISTENCY RULE:
-
-If a calculation is performed:
-
-- End PENERANGAN with:
-  FINAL VALUE = RMxxx.xx
-
-- JAWAPAN RINGKAS must use the same FINAL VALUE
-
-- Do not change or re-round the number after it is calculated
