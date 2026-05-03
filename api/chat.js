@@ -46,6 +46,7 @@ export default async function handler(req, res) {
 
    [DISCLAIMER]
    Ini adalah panduan rujukan awal sahaja dan bukan nasihat undang-undang. Jawapan yang tepat bergantung kepada fakta spesifik, kontrak pekerjaan, dan polisi syarikat. Untuk nasihat undang-undang yang tepat, sila rujuk pakar HR atau peguam.
+   
     --- CALCULATION SAFEGUARD RULE (APPLIES ONLY WHEN CALCULATION IS REQUIRED) ---
     If the question does NOT require any calculation:
     If the question does NOT require any calculation:
