@@ -774,12 +774,12 @@ TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
       }
     });
   }
-
+ 
   // Debug log — visible in Vercel dashboard → Project → Logs
   // Shows exactly what conversation history the AI receives each request.
   // To view: Vercel Dashboard → your project → Logs tab → filter by [chat.js]
   console.log('[chat.js] parsedHistory:', JSON.stringify(parsedHistory, null, 2));
-
+ 
   // ─── Strip HTML from history answers ────────────────────────────────────────
   // FIX J — decode common HTML entities so the AI sees clean text in history
   const stripHtml = (str) =>
@@ -792,15 +792,15 @@ TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
       .replace(/&quot;/g, '"')
       .replace(/&#39;/g, "'")
       .trim();
-
+ 
   // ─── Build messages array ────────────────────────────────────────────────────
   const messages = [{ role: 'system', content: systemPrompt }];
-
+ 
   parsedHistory.forEach(exchange => {
     messages.push({ role: 'user', content: exchange.question });
     messages.push({ role: 'assistant', content: stripHtml(exchange.answer) });
   });
-
+ 
   // ─── Language detection & per-request system injection ───────────────────────
   // FIX A — use percentage-based detection instead of raw count to avoid
   //          misclassifying English questions that contain a few Malay terms.
@@ -819,15 +819,15 @@ TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
     'langkah','penerangan','rujukan','jawapan','ringkas','disclaimer','notis',
     'tahunan','pekerja','majikan','kontrak','berhenti','letak','jawatan'
   ]);
-
+ 
   const questionWords = question.trim().toLowerCase().split(/\s+/);
   const totalWords = questionWords.length;
   const malayCount = questionWords.filter(w => malayWords.has(w)).length;
   const malayRatio = totalWords > 0 ? malayCount / totalWords : 0;
-
+ 
   // Malay if: ratio >= 40% AND at least 2 Malay words (prevents single-word false positives)
   const isMalay = malayCount >= 2 && malayRatio >= 0.4;
-
+ 
   if (isMalay) {
     messages.push({
       role: 'system',
@@ -839,7 +839,7 @@ TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
       content: 'LANGUAGE INSTRUCTION: The user is writing in English. You MUST reply ENTIRELY in English. Every word including headers and disclaimer must be in English. FORMAT REMINDER: Response MUST start with exactly [BRIEF ANSWER] (not <b>BRIEF ANSWER</b>) and contain all 4 sections: [BRIEF ANSWER], [EXPLANATION], [REFERENCE], [DISCLAIMER]. NEVER wrap section headers in <b> tags — the middleware handles all formatting. Each calculation step or explanation point MUST be on its own separate line. NEVER write multiple steps in one continuous paragraph.'
     });
   }
-
+ 
   // FIX D — append a compact critical-rules reminder at the very end of the
   //          messages array so it is near the model's recency window
   messages.push({
@@ -847,28 +847,27 @@ TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
     content: `FINAL RULES REMINDER (highest priority — apply these above all else):
 1. OUTPUT ONLY square-bracket markers like [JAWAPAN RINGKAS] or [BRIEF ANSWER]. NEVER output <b>...</b> around section headers yourself.
 2. SCOPE: Answer ONLY what was asked. Off Day rule and OT Ambiguity rule OVERRIDE scope — always show both scenarios for those.
-3. BRIEF ANSWER / JAWAPAN RINGKAS amount MUST match PENERANGAN amount exactly. Generate PENERANGAN with full calculation steps FIRST, confirm the final number, THEN write BRIEF ANSWER / JAWAPAN RINGKAS by COPYING the FINAL number exactly as written in PENERANGAN. Do NOT change, re-round, or rewrite the number.. NEVER write BRIEF ANSWER / JAWAPAN RINGKAS first — always calculate first, summarise after.
-4. The number in BRIEF ANSWER / JAWAPAN RINGKAS must be an exact character-for-character copy of the final number in PENERANGAN.
-5. Each calculation step on its OWN LINE. Never run steps together in one paragraph.
-6. No Nota/Note/summary paragraph after the last calculation step.
-7. Normal hours assumption: if not stated by user, assume 8 hours/day and say so once in PENERANGAN.
-8. TERMINATION BENEFIT MULTIPLICATION — STRICTLY ENFORCED: Always compute the final multiplication in this exact order to avoid arithmetic errors:
+3. BRIEF ANSWER / JAWAPAN RINGKAS amount MUST match PENERANGAN amount exactly. Generate PENERANGAN with full calculation steps FIRST, confirm the final number, THEN write BRIEF ANSWER / JAWAPAN RINGKAS using that confirmed number. NEVER write BRIEF ANSWER / JAWAPAN RINGKAS first — always calculate first, summarise after.
+4. Each calculation step on its OWN LINE. Never run steps together in one paragraph.
+5. No Nota/Note/summary paragraph after the last calculation step.
+6. Normal hours assumption: if not stated by user, assume 8 hours/day and say so once in PENERANGAN.
+7. TERMINATION BENEFIT MULTIPLICATION — STRICTLY ENFORCED: Always compute the final multiplication in this exact order to avoid arithmetic errors:
    Step A: total_days = days_per_year × years_of_service  (compute this number first and write it down)
    Step B: termination_benefit = 1_day_wages × total_days  (then multiply by daily wage)
    EXAMPLE: 1 day wages = RM121.64 | Rate = 15 days/year | Service = 4 years
    Step A: total_days = 15 × 4 = 60 days
    Step B: termination_benefit = RM121.64 × 60 = RM7,298.40
    NEVER skip Step A and jump directly to a three-number multiplication — that is where errors occur.
-9. CONVERSATION HISTORY: Always use salary, allowances, and job details from previous messages. If the user asks a short follow-up like "if i work 35 hours OT?" without restating their salary, retrieve their salary from conversation history and calculate using that — do NOT use a generic example salary.`
+8. CONVERSATION HISTORY: Always use salary, allowances, and job details from previous messages. If the user asks a short follow-up like "if i work 35 hours OT?" without restating their salary, retrieve their salary from conversation history and calculate using that — do NOT use a generic example salary.`
   });
-
+ 
   messages.push({ role: 'user', content: question });
-
+ 
   // ─── OpenAI API call ─────────────────────────────────────────────────────────
   try {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 30000);
-
+ 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -883,24 +882,24 @@ TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
       }),
       signal: controller.signal
     });
-
+ 
     clearTimeout(timeout);
-
+ 
     const data = await response.json();
-
+ 
     // FIX I (error branch) — generic error message, no internal detail leaked
     if (!response.ok) {
       console.error('[chat.js] OpenAI API error:', data.error?.message);
       return res.status(500).json({ error: 'Ralat sistem. Sila cuba semula.' });
     }
-
+ 
     // FIX N — consistent Malay error message (was English in original)
     const rawAnswer = data.choices?.[0]?.message?.content;
     if (!rawAnswer) {
       console.error('[chat.js] Empty content in OpenAI response');
       return res.status(500).json({ error: 'Ralat sistem. Tiada respons diterima. Sila cuba semula.' });
     }
-
+ 
     // FIX H — detect silent truncation and return a user-friendly message
     const finishReason = data.choices?.[0]?.finish_reason;
     if (finishReason === 'length') {
@@ -913,16 +912,16 @@ TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
         choices: ''
       });
     }
-
+ 
     // ─── HTML conversion pipeline ──────────────────────────────────────────────
     const headerStyle = 'display:block;font-weight:bold;margin:0;padding:0;line-height:1.5;';
-
+ 
     // FIX E — detect [CLARIFICATION REQUIRED] as a distinct response type
     //          so it gets its own clean rendering path
     const isClarification = /\[CLARIFICATION REQUIRED\]/i.test(rawAnswer);
-
+ 
     let htmlAnswer = rawAnswer;
-
+ 
     // Step 1: Normalise any trailing newlines after markers (clean slate before replacement)
     htmlAnswer = htmlAnswer
       .replace(/\[JAWAPAN RINGKAS\]\s*/gi,        '[JAWAPAN RINGKAS]')
@@ -933,7 +932,7 @@ TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
       .replace(/\[EXPLANATION\]\s*/gi,            '[EXPLANATION]')
       .replace(/\[REFERENCE\]\s*/gi,              '[REFERENCE]')
       .replace(/\[CLARIFICATION REQUIRED\]\s*/gi, '[CLARIFICATION REQUIRED]');
-
+ 
     // Step 2: Replace square-bracket markers with styled bold headers
     //         The middleware is the single source of header styling — AI should not output <b> tags.
     htmlAnswer = htmlAnswer
@@ -945,7 +944,7 @@ TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
       .replace(/\[EXPLANATION\]/g,            `<b style="${headerStyle}">EXPLANATION</b>`)
       .replace(/\[REFERENCE\]/g,              `<b style="${headerStyle}">REFERENCE</b>`)
       .replace(/\[CLARIFICATION REQUIRED\]/g, `<b style="${headerStyle}">CLARIFICATION REQUIRED</b>`);
-
+ 
     // FIX C — catch AI-generated <b>HEADER</b> tags that bypassed the marker system
     //          and inject the headerStyle so they render consistently
     const headerLabels = [
@@ -956,7 +955,7 @@ TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
       new RegExp(`<b>(${headerLabels})<\\/b>`, 'gi'),
       (_, label) => `<b style="${headerStyle}">${label.toUpperCase()}</b>`
     );
-
+ 
     // FIX O — catch plain-text headers (no brackets, no <b>) that leaked through
     //          from conversation history. Only match at line start to avoid false positives.
     htmlAnswer = htmlAnswer.replace(
@@ -964,36 +963,36 @@ TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
       (_, pre, label, post) =>
         `${pre}<b style="${headerStyle}">${label.toUpperCase()}</b>${post === ':' ? '' : post}`
     );
-
+ 
     // Step 3: Convert all \n newlines to <br>
     htmlAnswer = htmlAnswer.replace(/\n/g, '<br>');
-
+ 
     // Step 4: Normalise spacing around bold headers
     //         Remove ALL <br> immediately after </b>, then add exactly ONE
     htmlAnswer = htmlAnswer.replace(/<\/b>(<br>)+/g, '</b>');
     htmlAnswer = htmlAnswer.replace(/<\/b>/g, '</b><br>');
-
+ 
     // Step 5: Collapse excessive consecutive <br> tags
     htmlAnswer = htmlAnswer.replace(/(<br>){3,}/g, '<br><br>');
-
+ 
     // Step 6: Remove trailing <br> tags
     htmlAnswer = htmlAnswer.replace(/(<br>\s*)+$/gi, '').trim();
-
+ 
     // Step 7: Fallback — if pipeline produced empty string, use raw answer with basic newline conversion
     if (!htmlAnswer.trim()) {
       htmlAnswer = rawAnswer.replace(/\n/g, '<br>');
     }
-
+ 
     // FIX E (rendering) — for clarification responses, add a subtle visual distinction
     const wrapperStyle = isClarification
       ? 'font-family: Poppins, sans-serif; font-size: 12px; line-height: 1.5; margin:0; padding:0; border-left: 3px solid #f0a500; padding-left: 8px;'
       : 'font-family: Poppins, sans-serif; font-size: 12px; line-height: 1.5; margin:0; padding:0;';
-
+ 
     const answer = `<div style="${wrapperStyle}">${htmlAnswer}</div>`;
-
+ 
     // NOTE: choices is intentionally kept as empty string — required by Bubble API workflow
     return res.status(200).json({ answer, choices: '' });
-
+ 
   } catch (err) {
     if (err.name === 'AbortError') {
       return res.status(504).json({ error: 'Masa tamat. Sila cuba semula.' });
