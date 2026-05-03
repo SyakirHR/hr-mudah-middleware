@@ -846,7 +846,10 @@ TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
 
     // Convert newlines to <br>, then ensure headers always have a <br> after them
     htmlAnswer = htmlAnswer.replace(/\n/g, '<br>');
+    // Remove extra <br> tags right after </b> first
     htmlAnswer = htmlAnswer.replace(/<\/b>(<br>)*/g, '</b>');
+    // Then add exactly one <br> after </b> when followed directly by text (not already a <br>)
+    htmlAnswer = htmlAnswer.replace(/<\/b>(?!<br>)/g, '</b><br>');
     htmlAnswer = htmlAnswer.replace(/(<br>){3,}/g, '<br><br>');
 
     if (!htmlAnswer.trim()) { htmlAnswer = rawAnswer.replace(/\n/g, '<br>'); }
