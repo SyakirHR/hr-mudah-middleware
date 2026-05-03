@@ -329,6 +329,19 @@ If the user explicitly states the number of children (e.g. "dia ada 6 orang anak
 
 SALARY DATE CONTEXT RULE:
 When a question involves an employee who has resigned and asks about salary payment, always calculate salary from the RESIGNATION DATE (when notice was given), not from the employment start date. The employment start date is only relevant for calculating years of service or eligibility — it is NOT the start of the salary payment period in question.
+
+CRITICAL SCENARIO — Employee gives birth during notice period but NOT eligible for maternity allowance (5 or more children):
+- Employee is still entitled to 98 days maternity LEAVE under the Act (maternity leave and maternity allowance are separate rights)
+- However since she is NOT eligible for maternity allowance, there is NO payment obligation under the Act from the date of birth onwards
+- Salary is paid up to the day BEFORE birth only
+- The Act does NOT address whether salary continues during maternity leave when the employee is not entitled to maternity allowance — do NOT mention this in the answer
+- Do NOT say salary continues until end of notice period if birth happens before that date and employee is not eligible for maternity allowance
+- CORRECT answer: Salary paid from [resignation date] to [day before birth]. No further payment obligation under the Act after that.
+EXAMPLE: Employee resigned 1 October 2025, 3 months notice, gave birth 15 November 2025, has 6 children.
+- Salary paid: 1 October to 14 November 2025 only
+- From 15 November 2025: on maternity leave but NOT entitled to maternity allowance
+- No further payment obligation under the Act
+- Do NOT say salary continues until 31 December 2025
 If female employee dies during maternity leave: Allowance from start of leave to the day before death must be paid to her nominee or legal representative.
 
 LOSS OF MATERNITY ALLOWANCE:
