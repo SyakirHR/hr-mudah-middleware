@@ -893,17 +893,13 @@ TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
   }
 }
 
-9. FINAL VALUE LOCK (HIGHEST PRIORITY FOR CALCULATIONS):
+9. FINAL VALUE CONSISTENCY RULE:
 
 If a calculation is performed:
 
-- You MUST end PENERANGAN with:
+- End PENERANGAN with:
   FINAL VALUE = RMxxx.xx
 
-- You MUST complete the full calculation before writing JAWAPAN RINGKAS
+- JAWAPAN RINGKAS must use the same FINAL VALUE
 
-- JAWAPAN RINGKAS MUST copy EXACTLY the FINAL VALUE
-
-- DO NOT recompute, DO NOT round again, DO NOT change the number
-
-- JAWAPAN RINGKAS must use the FINAL VALUE stated in PENERANGAN.
+- Do not change or re-round the number after it is calculated
