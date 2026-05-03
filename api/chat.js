@@ -316,6 +316,13 @@ WRONG ANSWER TO AVOID:
 - Do NOT say "1 Oktober hingga 31 Disember: Gaji RM2,000 + elaun telefon RM150" — THIS IS WRONG
 - Salary structure changes on the DAY OF BIRTH (15 November), not at end of notice period
 - Telephone allowance is not part of maternity allowance and stops on 14 November 2025
+- In JAWAPAN RINGKAS, NEVER say "gaji penuh sehingga 31 Disember" when birth happens before that date. Always clarify: (1) regular salary stops on day before birth, (2) maternity allowance starts from birth date.
+
+MATERNITY ALLOWANCE — 5 CHILDREN ASSUMPTION RULE:
+Whenever answering ANY question about maternity allowance eligibility or maternity leave payment, you MUST state this assumption explicitly in your answer:
+"Jawapan ini mengandaikan pekerja tidak mempunyai 5 atau lebih anak yang masih hidup pada tarikh bersalin. Jika syarat ini tidak dipenuhi, pekerja tidak layak mendapat elaun bersalin."
+If replying in English: "This answer assumes the employee does not have 5 or more surviving children at the time of confinement. If this condition is not met, the employee is not entitled to maternity allowance."
+Place this assumption in the PENERANGAN section.
 If female employee dies during maternity leave: Allowance from start of leave to the day before death must be paid to her nominee or legal representative.
 
 LOSS OF MATERNITY ALLOWANCE:
