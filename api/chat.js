@@ -8,6 +8,8 @@ export default async function handler(req, res) {
 
   const { question, history } = req.body;
   if (!question) return res.status(400).json({ error: 'Question is required' });
+  if (question.length > 2000) return res.status(400).json({ error: 'Question is too long. Please keep your question under 2000 characters.' });
+  if (history && history.length > 20000) return res.status(400).json({ error: 'Ralat sistem. Sila cuba semula.' });
 
   const systemPrompt = `You are an HR assistant for Malaysian companies specializing in the Employment Act 1955 / Akta Kerja 1955 (Malaysia). STRICT RULES you must follow:
 
@@ -71,8 +73,10 @@ export default async function handler(req, res) {
      * User asks 'berapa OT?' → calculate OT only. Do NOT mention eligibility rules unless relevant.
      * User asks 'berapa hari cuti?' → state the number of days only. Do NOT mention forfeiture rules or procedures unless asked.
      * Any extra information not asked = REMOVE IT.
+     EXCEPTION TO SCOPE RULE: The OFF DAY RULE and OT AMBIGUITY RULE always override the strict scope rule. Always show BOTH scenarios when these rules apply, even if the user appears to have asked only one question.
    - Keep JAWAPAN RINGKAS to 1-2 sentences maximum — direct and to the point
-   - CRITICAL: If your answer involves a calculation, the amount stated in JAWAPAN RINGKAS MUST match the final amount concluded in PENERANGAN. NEVER state a different amount in JAWAPAN RINGKAS from what is calculated in PENERANGAN. If showing two scenarios, state both amounts in JAWAPAN RINGKAS.
+   - CRITICAL: If your answer involves a calculation, the amount stated in JAWAPAN RINGKAS MUST match the final amount concluded in PENERANGAN. NEVER state a different amount in JAWAPAN RINGKAS from what is calculated in PENERANGAN. If showing two scenarios, state both amounts in JAWAPAN RINGKAS. Before finalizing your response, re-read JAWAPAN RINGKAS and compare the amounts with PENERANGAN — if they differ, rewrite until they match.
+   - NOTA/REDUNDANCY RULE: NEVER add a "Nota:", "Note:", or any additional paragraph after the calculation steps that repeats or summarizes what was already calculated. Do NOT add closing summary paragraphs. The calculation steps in PENERANGAN are sufficient. Any paragraph starting with "Nota:", "Note:", "Namun,", "Oleh itu," after the last calculation step must be REMOVED.
    - PENERANGAN elaborates ONLY on what was asked. Nothing more. Nothing extra.
 
 5. If the answer is not found in the knowledge base, say in the same language as the question that you do not have that information in your database.
@@ -84,6 +88,7 @@ export default async function handler(req, res) {
    - User says "I want to resign" without stating years of service or notice period in contract → Ask for years of service and whether a notice period is stated in their contract.
    - User says "boleh ke employer buat macam ni?" without describing what the employer did → Ask them to describe the situation clearly.
    - User asks "berapa OT saya?" without stating salary or hours worked → Ask for the missing details.
+   - User does not state their normal working hours → Assume 8 hours/day and disclose this assumption in PENERANGAN: "Kiraan ini mengandaikan waktu kerja biasa adalah 8 jam sehari." Do NOT ask the user for their working hours if they have not stated it — just assume 8 hours and disclose.
    - User mentions any allowance generically when the type would change the calculation outcome → Ask for the specific type.
    - User says "rest day" or "hari rehat" → This is CLEAR. It is the statutory rest day under Section 59 EA 1955. Proceed immediately to calculate using Section 60 rates. Do NOT ask for clarification.
    - User says "off day" or "hari tidak bekerja" or any vague non-working day term → Do NOT ask for clarification. Instead, explain both possible meanings and provide BOTH scenarios. See OFF DAY RULE in the knowledge base.
@@ -251,14 +256,14 @@ Employee resigned 1 October 2025 with 3 months notice. Gave birth 15 November 20
 - BUT: From 15 November 2025, maternity leave begins immediately
 - Regular salary is paid up to 14 November 2025 (day before birth)
 - From 15 November 2025, maternity allowance replaces regular salary
-- Maternity allowance = 98 days from 15 November 2025 = 21 February 2026
-- Even though contract ends 31 December 2025, employer must continue paying maternity allowance until 21 February 2026
-- Therefore: TARIKH TERAKHIR YANG KENA BAYAR = 21 February 2026 (last day of maternity allowance)
+- Maternity allowance = 98 days from 15 November 2025 = 20 February 2026
+- Even though contract ends 31 December 2025, employer must continue paying maternity allowance until 20 February 2026
+- Therefore: TARIKH TERAKHIR YANG KENA BAYAR = 20 February 2026 (last day of maternity allowance)
 - NOT 31 December 2025 — that is only the last day of the contract, not the last payment obligation
 - Summary of payments:
   * Regular salary: 1 October to 14 November 2025
-  * Maternity allowance: 15 November 2025 to 21 February 2026 (98 days)
-  * Last payment date = 21 February 2026
+  * Maternity allowance: 15 November 2025 to 20 February 2026 (98 days)
+  * Last payment date = 20 February 2026
 
 MATERNITY ALLOWANCE: Employee is entitled to maternity allowance if:
 1. She does NOT have 5 or more surviving children at time of confinement;
@@ -326,7 +331,8 @@ If replying in English: "This answer assumes the employee does not have 5 or mor
 If the user explicitly states the number of children (e.g. "dia ada 6 orang anak"), use that information directly — do NOT add the assumption statement. Instead state clearly whether the employee is eligible or not based on the stated number.
 
 SALARY DATE CONTEXT RULE:
-When a question involves an employee who has resigned and asks about salary payment, always calculate salary from the RESIGNATION DATE (when notice was given), not from the employment start date. The employment start date is only relevant for calculating years of service or eligibility — it is NOT the start of the salary payment period in question.
+When a question involves an employee who has resigned and asks about SALARY PAYMENT (not termination benefits), always calculate salary from the RESIGNATION DATE (when notice was given), not from the employment start date. The employment start date is only relevant for calculating years of service or eligibility — it is NOT the start of the salary payment period in question.
+IMPORTANT: This rule applies ONLY to salary payment questions. For TERMINATION BENEFITS calculations, always look back 12 months from the LAST DAY OF SERVICE — do NOT apply this rule to termination benefit calculations.
 
 CRITICAL SCENARIO — Employee gives birth during notice period but NOT eligible for maternity allowance (5 or more children):
 - Employee is still entitled to 98 days maternity LEAVE under the Act (maternity leave and maternity allowance are separate rights)
@@ -754,7 +760,15 @@ TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
   const messages = [{ role: 'system', content: systemPrompt }];
 
   // Strip HTML from answers before sending to AI so it doesn't get confused
-  const stripHtml = (str) => (str || '').replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim();
+  const stripHtml = (str) => (str || '')
+    .replace(/<[^>]*>/g, '')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .trim();
 
   parsedHistory.forEach(exchange => {
     messages.push({ role: 'user', content: exchange.question });
@@ -785,7 +799,7 @@ TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
   // ─── OpenAI call ─────────────────────────────────────
   try {
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 25000);
+    const timeout = setTimeout(() => controller.abort(), 30000);
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -795,7 +809,7 @@ TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
       body: JSON.stringify({
         model: 'gpt-4.1-mini',
         messages,
-        max_tokens: 2000,
+        max_tokens: 3000,
         temperature: 0.1
       }),
       signal: controller.signal
@@ -803,23 +817,32 @@ TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
     clearTimeout(timeout);
 
     const data = await response.json();
-    if (!response.ok) return res.status(500).json({ error: data.error?.message || 'OpenAI error' });
+    if (!response.ok) return res.status(500).json({ error: 'Ralat sistem. Sila cuba semula.' });
 
     const rawAnswer = data.choices?.[0]?.message?.content;
-    if (!rawAnswer) return res.status(500).json({ error: 'No response received from AI. Please try again.' });
+    if (!rawAnswer) return res.status(500).json({ error: 'Ralat sistem. Sila cuba semula.' });
+
+    // Check if response was truncated due to token limit
+    const finishReason = data.choices?.[0]?.finish_reason;
+    if (finishReason === 'length') {
+      return res.status(200).json({
+        answer: '<div style="font-family: Poppins, sans-serif; font-size: 12px; line-height: 1.5; margin:0; padding:0;">Jawapan terlalu panjang. Sila tanya soalan yang lebih spesifik atau pecahkan kepada beberapa soalan.</div>',
+        choices: ''
+      });
+    }
 
     // ─── Convert to HTML ────────────────────────────────
     const headerStyle = 'display:block;font-weight:bold;margin:0;padding:0;line-height:1.5;';
 
     let htmlAnswer = rawAnswer
-      .replace(/\[JAWAPAN RINGKAS\]\n*/g, '[JAWAPAN RINGKAS]')
-      .replace(/\[PENERANGAN\]\n*/g, '[PENERANGAN]')
-      .replace(/\[RUJUKAN\]\n*/g, '[RUJUKAN]')
-      .replace(/\[DISCLAIMER\]\n*/g, '[DISCLAIMER]')
-      .replace(/\[BRIEF ANSWER\]\n*/g, '[BRIEF ANSWER]')
-      .replace(/\[EXPLANATION\]\n*/g, '[EXPLANATION]')
-      .replace(/\[REFERENCE\]\n*/g, '[REFERENCE]')
-      .replace(/\[CLARIFICATION REQUIRED\]\n*/g, '[CLARIFICATION REQUIRED]');
+      .replace(/\[JAWAPAN RINGKAS\]\n*/gi, '[JAWAPAN RINGKAS]')
+      .replace(/\[PENERANGAN\]\n*/gi, '[PENERANGAN]')
+      .replace(/\[RUJUKAN\]\n*/gi, '[RUJUKAN]')
+      .replace(/\[DISCLAIMER\]\n*/gi, '[DISCLAIMER]')
+      .replace(/\[BRIEF ANSWER\]\n*/gi, '[BRIEF ANSWER]')
+      .replace(/\[EXPLANATION\]\n*/gi, '[EXPLANATION]')
+      .replace(/\[REFERENCE\]\n*/gi, '[REFERENCE]')
+      .replace(/\[CLARIFICATION REQUIRED\]\n*/gi, '[CLARIFICATION REQUIRED]');
 
     htmlAnswer = htmlAnswer
       .replace(/\[JAWAPAN RINGKAS\]/g,        `<b style="${headerStyle}">JAWAPAN RINGKAS</b>`)
@@ -831,13 +854,19 @@ TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
       .replace(/\[REFERENCE\]/g,              `<b style="${headerStyle}">REFERENCE</b>`)
       .replace(/\[CLARIFICATION REQUIRED\]/g, `<b style="${headerStyle}">CLARIFICATION REQUIRED</b>`);
 
+    // Defensive cleanup: normalise AI-generated <b> headers that bypass the marker system
+    htmlAnswer = htmlAnswer.replace(/<b>(JAWAPAN RINGKAS|PENERANGAN|RUJUKAN|DISCLAIMER|BRIEF ANSWER|EXPLANATION|REFERENCE|CLARIFICATION REQUIRED)<\/b>/gi,
+      (_, label) => `<b style="${headerStyle}">${label}</b>`);
+
     // Convert newlines to <br>, then ensure headers always have exactly one <br> after them
     htmlAnswer = htmlAnswer.replace(/\n/g, '<br>');
     // Remove ALL <br> tags right after </b> first (clean slate)
     htmlAnswer = htmlAnswer.replace(/<\/b>(<br>)+/g, '</b>');
     // Then add exactly ONE <br> after every </b>
     htmlAnswer = htmlAnswer.replace(/<\/b>/g, '</b><br>');
-    // Collapse any triple or more <br> to double
+    // Collapse any double or more <br> immediately after </b><br> to single
+    htmlAnswer = htmlAnswer.replace(/(<\/b><br>)(<br>)+/g, '</b><br>');
+    // Collapse any triple or more <br> elsewhere to double
     htmlAnswer = htmlAnswer.replace(/(<br>){3,}/g, '<br><br>');
 
     if (!htmlAnswer.trim()) { htmlAnswer = rawAnswer.replace(/\n/g, '<br>'); }
