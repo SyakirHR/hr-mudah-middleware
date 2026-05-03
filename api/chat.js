@@ -847,7 +847,7 @@ TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
     content: `FINAL RULES REMINDER (highest priority — apply these above all else):
 1. OUTPUT ONLY square-bracket markers like [JAWAPAN RINGKAS] or [BRIEF ANSWER]. NEVER output <b>...</b> around section headers yourself.
 2. SCOPE: Answer ONLY what was asked. Off Day rule and OT Ambiguity rule OVERRIDE scope — always show both scenarios for those.
-3. BRIEF ANSWER / JAWAPAN RINGKAS amount MUST match PENERANGAN amount exactly. Generate PENERANGAN with full calculation steps FIRST, confirm the final number, THEN write BRIEF ANSWER / JAWAPAN RINGKAS using that confirmed number. NEVER write BRIEF ANSWER / JAWAPAN RINGKAS first — always calculate first, summarise after.
+3. BRIEF ANSWER / JAWAPAN RINGKAS amount MUST match PENERANGAN amount exactly. Generate PENERANGAN with full calculation steps FIRST, confirm the final number, THEN write BRIEF ANSWER / JAWAPAN RINGKAS by COPYING the FINAL number exactly as written in PENERANGAN. Do NOT change, re-round, or rewrite the number.. NEVER write BRIEF ANSWER / JAWAPAN RINGKAS first — always calculate first, summarise after.
 4. Each calculation step on its OWN LINE. Never run steps together in one paragraph.
 5. No Nota/Note/summary paragraph after the last calculation step.
 6. Normal hours assumption: if not stated by user, assume 8 hours/day and say so once in PENERANGAN.
