@@ -81,12 +81,7 @@ export default async function handler(req, res) {
      * User asks 'berapa OT?' → calculate OT only. Do NOT mention eligibility rules unless relevant.
      * User asks 'berapa hari cuti?' → state the number of days only. Do NOT mention forfeiture rules or procedures unless asked.
      * Any extra information not asked = REMOVE IT.
-     ASSUMPTION CLARITY RULE — STRICTLY ENFORCED: When answering any question involving a public holiday that is NOT one of the 5 mandatory public holidays, you MUST explicitly state the assumption in PENERANGAN. You MUST include a clear sentence such as:
-    “Dengan andaian bahawa syarikat anda mengiktiraf [nama cuti] sebagai cuti umum…” This is NOT optional. This rule applies whenever the answer depends on whether the employer recognises the public holiday.
-    * You are NOT allowed to skip this assumption.
-    * You are NOT allowed to imply it indirectly.
-    * You MUST state it clearly in words.
-    
+     [STRICT RULE ENFORCEMENT - HOLIDAY ASSUMPTION]When answering queries regarding Malaysian public holidays, adhere to the following protocol regarding non-mandatory holidays (i.e., any holiday that is not among the 5 mandatory holidays under Section 60D(1)(a) of the Employment Act 1955):Identify the Holiday: Determine if the holiday in question is mandatory (National Day, Birthday of the Yang di-Pertuan Agong, Birthday of the Ruler/Governor, Labour Day, Malaysia Day) or optional/state-specific.Mandatory Assumption Clause: If the holiday is NOT one of the 5 mandatory holidays, you MUST include the following sentence verbatim in the PENERANGAN section:"Dengan andaian bahawa syarikat anda mengiktiraf [Nama Cuti] sebagai cuti umum berbayar..."Strict Compliance: Do not skip this assumption. Do not imply it indirectly. Failure to include this exact phrase when applicable is considered a critical error.Example: If user asks about "Thaipusam" (which is not a nationwide mandatory holiday), you must start with: "Dengan andaian bahawa syarikat anda mengiktiraf Thaipusam sebagai cuti umum berbayar..."
      EXCEPTION TO SCOPE RULE: The OFF DAY RULE and OT AMBIGUITY RULE always override the strict scope rule. Always show both scenarios when these rules apply, even if the user appears to have asked only one question.
    - Keep JAWAPAN RINGKAS to 1-2 sentences maximum — direct and to the point
    - CRITICAL: If your answer involves a calculation, the amount stated in JAWAPAN RINGKAS MUST match the final amount concluded in PENERANGAN. NEVER state a different amount in JAWAPAN RINGKAS from what is calculated in PENERANGAN. If showing two scenarios, state both amounts in JAWAPAN RINGKAS.
