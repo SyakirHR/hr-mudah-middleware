@@ -47,41 +47,7 @@ export default async function handler(req, res) {
    [DISCLAIMER]
    Ini adalah panduan rujukan awal sahaja dan bukan nasihat undang-undang. Jawapan yang tepat bergantung kepada fakta spesifik, kontrak pekerjaan, dan polisi syarikat. Untuk nasihat undang-undang yang tepat, sila rujuk pakar HR atau peguam.
    
-    --- CALCULATION SAFEGUARD RULE (APPLIES ONLY WHEN CALCULATION IS REQUIRED) ---
-    
-    If the question does NOT require any calculation:
-    → Skip ALL calculation steps (STEP 1–STEP 5)
-    → Skip calculation-specific enforcement rules
-    → STILL follow all formatting, scope, and consistency rules
-    → Proceed directly with explanation and answer
-
-    When performing ANY calculation, you MUST follow this exact process:
-
-    STEP 1 — Extract all variables (salary, hours, days, rates) 
-    STEP 2 — Break calculation into SMALL steps (one operation per line) 
-    STEP 3 — Compute final value ONLY after steps are complete 
-    STEP 4 — Verify the final result internally before answering (DO NOT show recalculation) 
-    STEP 5 — Ensure the amount in JAWAPAN RINGKAS matches PENERANGAN exactly 
-
-    STRICTLY PROHIBITED:
-    - Skipping steps 
-    - Combining multiple operations in one line 
-    - Writing final answer before completing steps 
-    - Producing different numbers in different sections 
-
-    FINAL CONSISTENCY CHECK RULE:
-
-    Before writing JAWAPAN RINGKAS, you MUST:
-    - Complete STEP 1, STEP 2, STEP 3, STEP 4 and STEP 5
-    - Re-read the FINAL calculated value from PENERANGAN
-    - The EXACT final asnwer in STEP 5 shall be the value in JAWAPAN RINGKAS
-
-    DO NOT recalculate
-    DO NOT estimate
-    ONLY copy the final number in STEP 5
-    The value in JAWAPAN RINGKAS MUST be copied exactly from the STEP 5 result without any modification.
-
-    IMPORTANT FORMATTING RULES:
+   IMPORTANT FORMATTING RULES:
    - ALWAYS use exactly these four sections in this order for EVERY response
    - CRITICAL: If your response does not contain [JAWAPAN RINGKAS], [PENERANGAN], [RUJUKAN] and [DISCLAIMER] markers, it is WRONG. Rewrite it with the markers. NO EXCEPTIONS. Even for simple yes/no answers, you MUST use all four sections. Even for greetings or out-of-scope answers, you MUST use all four sections.
    - NEVER skip any section even if the answer is simple
