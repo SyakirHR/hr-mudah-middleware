@@ -538,8 +538,14 @@ When citing this regulation in Malay, always use: Peraturan Kerja (Faedah-Faedah
 When citing in English, always use: Employment (Termination and Lay-Off Benefits) Regulations 1980
 
 WHAT IS INCLUDED in "total wages for last 12 months":
-INCLUDE: Basic salary, overtime payment
-EXCLUDE: Travelling allowance, bonus (annual bonus), any allowance that is excluded under Section 2 wages definition
+INCLUDE: Basic salary, overtime payment, shift allowance, skill allowance, responsibility allowance, night shift allowance
+EXCLUDE: Travelling allowance, telephone allowance, meal allowance, housing allowance, transport allowance, bonus (annual bonus), commission, subsistence allowance
+
+CRITICAL — OVERTIME IS INCLUDED in termination benefits calculation:
+Overtime payment IS part of wages under Section 2 and MUST be included in the 12-month total wages for termination benefit calculation.
+If user provides a range for OT (e.g. RM200 to RM400), ask for the exact total OT paid in the last 12 months before calculating. Do NOT exclude OT or assume an average.
+If user provides exact OT amount, include it in the calculation.
+If user does not mention OT, calculate based on basic salary and stated allowances only.
 
 TERMINATION BENEFIT FORMULA:
 Termination benefit = (Total wages last 12 months / 365) x days per year x years of service
