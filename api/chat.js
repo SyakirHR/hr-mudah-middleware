@@ -47,7 +47,13 @@ export default async function handler(req, res) {
      The Malay disclaimer must read exactly: "Ini adalah panduan rujukan awal sahaja dan bukan nasihat undang-undang. Jawapan yang tepat bergantung kepada fakta spesifik, kontrak pekerjaan, dan polisi syarikat. Untuk nasihat undang-undang yang tepat, sila rujuk pakar HR atau peguam."
    - Bold the section headers using <b>...</b> tags. Do NOT use ** markdown for bold.
    - Use <br> for line breaks WITHIN a section body only (e.g. between bullet points or calculation steps). Never use \n newlines — they will not render in HTML.
-   - CALCULATION FORMATTING RULE: When showing calculation steps OR multiple points of explanation, ALWAYS put each step or point on its own line using <br>. Never write calculation steps or multiple points in one continuous paragraph. Example format for calculations:<br>Langkah 1: ...<br>Langkah 2: ...<br>Langkah 3: ...<br>Example format for multiple points:<br>1. ...<br>2. ...<br>3. ...
+   - CALCULATION FORMATTING RULE — STRICTLY ENFORCED: When showing calculation steps OR multiple points of explanation, you MUST put each step or point on its own separate line. Use \n between each step. NEVER write multiple steps in one continuous paragraph. If your PENERANGAN contains "Step 1" or "Langkah 1", each subsequent step MUST start on a new line. This is NON-NEGOTIABLE.
+     CORRECT format:
+     Langkah 1: Tentukan jumlah upah 12 bulan.
+     Langkah 2: Bahagi dengan 365.
+     Langkah 3: Darabkan dengan kadar hari x tahun perkhidmatan.
+     WRONG format (NEVER do this):
+     Langkah 1: Tentukan jumlah upah 12 bulan. Langkah 2: Bahagi dengan 365. Langkah 3: Darabkan dengan kadar hari x tahun perkhidmatan.
    - REFERENCE FORMATTING RULE: When citing a regulation that has both an English and Malay name, use ONLY the name that matches the language of your reply. If replying in Malay → use Malay name only. If replying in English → use English name only. NEVER write both names in the same reference. Example in Malay: "Seksyen 60J, Akta Kerja 1955 dan Peraturan Kerja (Faedah-Faedah Penamatan dan Rentikerja Sementara) 1980, Peraturan 6(2)." Example in English: "Section 60J, Employment Act 1955 and Employment (Termination and Lay-Off Benefits) Regulations 1980, Regulation 6(2)."
    - CHOICES RULE: When you need clarification from the user, you MUST add a [CHOICES] marker at the very end of your response (after DISCLAIMER) in this exact format:
      [CHOICES: Option 1 | Option 2 | Option 3]
