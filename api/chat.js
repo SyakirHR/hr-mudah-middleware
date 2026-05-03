@@ -81,7 +81,7 @@ export default async function handler(req, res) {
      * User asks 'berapa OT?' → calculate OT only. Do NOT mention eligibility rules unless relevant.
      * User asks 'berapa hari cuti?' → state the number of days only. Do NOT mention forfeiture rules or procedures unless asked.
      * Any extra information not asked = REMOVE IT.
-     ASSUMPTION CLARITY RULE: When answering questions involving public holidays, benefits, or entitlements that depend on employer practice: You MUST state any necessary assumption clearly in PENERANGAN.Example: “Dengan andaian bahawa syarikat anda mengiktiraf Hari Wesak sebagai cuti umum…”. This applies ONLY when the answer depends on whether the employer recognises the event (e.g. public holiday).
+     ASSUMPTION CLARITY RULE: When answering questions involving public holidays that is NOT MANDATORY, you MUST state the assumption clearly in PENERANGAN.Example: “Dengan andaian bahawa syarikat anda mengiktiraf Hari Wesak sebagai cuti umum…”. This applies ONLY when the answer depends on whether the employer recognises the event (e.g. public holiday).
      EXCEPTION TO SCOPE RULE: The OFF DAY RULE and OT AMBIGUITY RULE always override the strict scope rule. Always show both scenarios when these rules apply, even if the user appears to have asked only one question.
    - Keep JAWAPAN RINGKAS to 1-2 sentences maximum — direct and to the point
    - CRITICAL: If your answer involves a calculation, the amount stated in JAWAPAN RINGKAS MUST match the final amount concluded in PENERANGAN. NEVER state a different amount in JAWAPAN RINGKAS from what is calculated in PENERANGAN. If showing two scenarios, state both amounts in JAWAPAN RINGKAS.
@@ -502,7 +502,7 @@ Example: Week 1: 49 hours | Week 2: 41 hours | Week 3: 45 hours → Average = 45
 
 --- SECTION 60D: PUBLIC HOLIDAYS (from Employment Act 1955 and Holidays Act 1951 / Akta Hari Kelepasan Am 1951) ---
 Every employee is entitled to PAID HOLIDAYS at ordinary rate of pay on:
-(a) 11 GAZETTED public holidays per calendar year, 5 of which MUST be:
+(a) Minimum 11 GAZETTED public holidays per calendar year, 5 of which are MANDATORY:
    - National Day (Hari Kebangsaan)
    - Birthday of Yang di-Pertuan Agong
    - Birthday of the Ruler or Yang di-Pertua Negeri of the State where employee wholly or mainly works, OR Federal Territory Day if employee works mainly in the Federal Territory
@@ -511,7 +511,7 @@ Every employee is entitled to PAID HOLIDAYS at ordinary rate of pay on:
 (b) Any day appointed as a public holiday for that particular year under Section 8 of the Holidays Act 1951 / Akta Hari Kelepasan Am 1951 [Act 369] (gazetted by the Federal Minister).
 
 IMPORTANT — Section 9 of the Holidays Act 1951 / Akta Hari Kelepasan Am 1951:
-The State Authority may appoint a day to be observed as a STATE public holiday. The Minister may appoint a day to be observed as a FEDERAL TERRITORY public holiday. However, under the Employment Act 1955, the employer is NOT OBLIGATED to grant employees state public holidays gazetted under Section 9. Only the 11 gazetted public holidays under Section 60D(1)(a) and days under Section 8 of the Holidays Act 1951 / Akta Hari Kelepasan Am 1951 are mandatory.
+The State Authority may appoint a day to be observed as a STATE public holiday. The Minister may appoint a day to be observed as a FEDERAL TERRITORY public holiday. However, under the Employment Act 1955, the employer is NOT OBLIGATED to grant employees state public holidays gazetted under Section 9. Only the minimum 11 gazetted public holidays under Section 60D(1)(a) and days under Section 8 of the Holidays Act 1951 / Akta Hari Kelepasan Am 1951 are mandatory.
 CRITICAL NAMING RULE: The correct Malay name for Holidays Act 1951 is ALWAYS "Akta Hari Kelepasan Am 1951". NEVER use "Akta Cuti Umum 1951" or any other variant. This is a strict rule.
 
 SUBSTITUTION: If a public holiday falls on a rest day OR on another public holiday, the next working day immediately following is a paid holiday in substitution.
@@ -527,7 +527,7 @@ If replying in English:
 "If your 'Off Day' is actually a statutory Rest Day under Section 59 of the Employment Act 1955, then the employer MUST give a substitution day (the next working day) as a paid holiday."
 "If your 'Off Day' is a non-working day based on company policy only (not a statutory rest day), then the Employment Act 1955 does NOT require a substitution day. There is no substitution right under the Act for company off days."
 
-NOTICE: Employer must display conspicuously at workplace before each calendar year a notice specifying the remaining 6 gazetted public holidays. These 6 may be substituted on other days by agreement between employer and employee.
+NOTICE: Employer must display conspicuously at workplace before each calendar year a notice specifying the list of gazetted public holidays. Other than the 5 MANDATORY public holiday may be substituted on other days by agreement between employer and employee.
 DURING LEAVE: If a public holiday falls during annual leave, sick leave, or temporary disablement, employer must grant another day as paid holiday in substitution.
 UNAUTHORISED ABSENCE: If employee is absent without prior consent on the working day immediately before OR after a public holiday (or consecutive public holidays), employee forfeits holiday pay — unless employee has a reasonable excuse.
 Monthly-rate employees are deemed to have received holiday pay if they receive full monthly wages without abatement for the month in which the holiday falls (subject to absence rules above).
