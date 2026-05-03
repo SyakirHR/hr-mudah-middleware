@@ -906,4 +906,4 @@ If a calculation is performed:
 
 - DO NOT recompute, DO NOT round again, DO NOT change the number
 
-- Ensure FINAL VALUE and JAWAPAN RINGKAS are consistent before completing the response
+- JAWAPAN RINGKAS must use the FINAL VALUE stated in PENERANGAN.
