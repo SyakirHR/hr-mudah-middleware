@@ -775,6 +775,11 @@ TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
     });
   }
 
+  // Debug log — visible in Vercel dashboard → Project → Logs
+  // Shows exactly what conversation history the AI receives each request.
+  // To view: Vercel Dashboard → your project → Logs tab → filter by [chat.js]
+  console.log('[chat.js] parsedHistory:', JSON.stringify(parsedHistory, null, 2));
+
   // ─── Strip HTML from history answers ────────────────────────────────────────
   // FIX J — decode common HTML entities so the AI sees clean text in history
   const stripHtml = (str) =>
@@ -842,10 +847,18 @@ TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
     content: `FINAL RULES REMINDER (highest priority — apply these above all else):
 1. OUTPUT ONLY square-bracket markers like [JAWAPAN RINGKAS] or [BRIEF ANSWER]. NEVER output <b>...</b> around section headers yourself.
 2. SCOPE: Answer ONLY what was asked. Off Day rule and OT Ambiguity rule OVERRIDE scope — always show both scenarios for those.
-3. JAWAPAN RINGKAS amount MUST match PENERANGAN amount exactly. Re-check before finalising.
+3. BRIEF ANSWER / JAWAPAN RINGKAS amount MUST match PENERANGAN amount exactly. Generate PENERANGAN with full calculation steps FIRST, confirm the final number, THEN write BRIEF ANSWER / JAWAPAN RINGKAS using that confirmed number. NEVER write BRIEF ANSWER / JAWAPAN RINGKAS first — always calculate first, summarise after.
 4. Each calculation step on its OWN LINE. Never run steps together in one paragraph.
 5. No Nota/Note/summary paragraph after the last calculation step.
-6. Normal hours assumption: if not stated by user, assume 8 hours/day and say so once in PENERANGAN.`
+6. Normal hours assumption: if not stated by user, assume 8 hours/day and say so once in PENERANGAN.
+7. TERMINATION BENEFIT MULTIPLICATION — STRICTLY ENFORCED: Always compute the final multiplication in this exact order to avoid arithmetic errors:
+   Step A: total_days = days_per_year × years_of_service  (compute this number first and write it down)
+   Step B: termination_benefit = 1_day_wages × total_days  (then multiply by daily wage)
+   EXAMPLE: 1 day wages = RM121.64 | Rate = 15 days/year | Service = 4 years
+   Step A: total_days = 15 × 4 = 60 days
+   Step B: termination_benefit = RM121.64 × 60 = RM7,298.40
+   NEVER skip Step A and jump directly to a three-number multiplication — that is where errors occur.
+8. CONVERSATION HISTORY: Always use salary, allowances, and job details from previous messages. If the user asks a short follow-up like "if i work 35 hours OT?" without restating their salary, retrieve their salary from conversation history and calculate using that — do NOT use a generic example salary.`
   });
 
   messages.push({ role: 'user', content: question });
