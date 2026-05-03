@@ -1024,3 +1024,17 @@ TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
     return res.status(500).json({ error: 'Ralat sistem. Sila cuba semula.' });
   }
 }
+
+9. FINAL VALUE LOCK (HIGHEST PRIORITY FOR CALCULATIONS):
+If a calculation is performed:
+
+- You MUST end PENERANGAN with:
+  FINAL VALUE = RMxxx.xx
+
+- You MUST NOT generate BRIEF ANSWER before completing the calculation
+
+- BRIEF ANSWER MUST copy EXACTLY the FINAL VALUE
+
+- DO NOT recompute, DO NOT round again, DO NOT change the number
+
+- If FINAL VALUE and BRIEF ANSWER differ, your answer is WRONG — regenerate internally before output
