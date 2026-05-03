@@ -519,9 +519,14 @@ MINIMUM TERMINATION/LAY-OFF BENEFIT RATES:
 - 5 years or more: 20 days' wages per year
 (Pro-rated for incomplete years, rounded to nearest month.)
 
-CRITICAL — FORMULA FOR 1 DAY WAGES (Regulation 6(2), Employment (Termination and Lay-Off Benefits) Regulations 1980):
+CRITICAL — FORMULA FOR 1 DAY WAGES:
+English name: Employment (Termination and Lay-Off Benefits) Regulations 1980
+Malay name: Peraturan Kerja (Faedah-Faedah Penamatan dan Rentikerja Sementara) 1980
+Regulation 6(2) of the above Regulations:
 1 day wages = Total wages for the last 12 completed months / 365 days
 This is NOT the same as monthly salary / 26. The divisor is always 365, not 26.
+When citing this regulation in Malay, always use: Peraturan Kerja (Faedah-Faedah Penamatan dan Rentikerja Sementara) 1980
+When citing in English, always use: Employment (Termination and Lay-Off Benefits) Regulations 1980
 
 WHAT IS INCLUDED in "total wages for last 12 months":
 INCLUDE: Basic salary, overtime payment
