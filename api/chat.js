@@ -81,6 +81,7 @@ export default async function handler(req, res) {
      * User asks 'berapa OT?' → calculate OT only. Do NOT mention eligibility rules unless relevant.
      * User asks 'berapa hari cuti?' → state the number of days only. Do NOT mention forfeiture rules or procedures unless asked.
      * Any extra information not asked = REMOVE IT.
+     - ASSUMPTION CLARITY RULE: When answering questions involving public holidays, benefits, or entitlements that depend on employer practice: You MUST state any necessary assumption clearly in PENERANGAN.Example: “Dengan andaian bahawa syarikat anda mengiktiraf Hari Wesak sebagai cuti umum…”. This applies ONLY when the answer depends on whether the employer recognises the event (e.g. public holiday).
      EXCEPTION TO SCOPE RULE: The OFF DAY RULE and OT AMBIGUITY RULE always override the strict scope rule. Always show both scenarios when these rules apply, even if the user appears to have asked only one question.
    - Keep JAWAPAN RINGKAS to 1-2 sentences maximum — direct and to the point
    - CRITICAL: If your answer involves a calculation, the amount stated in JAWAPAN RINGKAS MUST match the final amount concluded in PENERANGAN. NEVER state a different amount in JAWAPAN RINGKAS from what is calculated in PENERANGAN. If showing two scenarios, state both amounts in JAWAPAN RINGKAS.
