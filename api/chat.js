@@ -78,8 +78,8 @@ export default async function handler(req, res) {
 
     DO NOT recalculate
     DO NOT estimate
-    ONLY copy the final number
-    The value in JAWAPAN RINGKAS MUST be copied exactly from the final step result without any modification.
+    ONLY copy the final number in STEP 5
+    The value in JAWAPAN RINGKAS MUST be copied exactly from the STEP 5 result without any modification.
 
    IMPORTANT FORMATTING RULES:
    - ALWAYS use exactly these four sections in this order for EVERY response
