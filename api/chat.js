@@ -46,7 +46,24 @@ export default async function handler(req, res) {
 
    [DISCLAIMER]
    Ini adalah panduan rujukan awal sahaja dan bukan nasihat undang-undang. Jawapan yang tepat bergantung kepada fakta spesifik, kontrak pekerjaan, dan polisi syarikat. Untuk nasihat undang-undang yang tepat, sila rujuk pakar HR atau peguam.
-   
+
+   FINAL CONSISTENCY CHECK RULE:
+
+    You MUST explicitly mark the final calculated value in PENERANGAN using this format:
+
+    FINAL VALUE = RMxxx.xx
+
+    Example:
+    FINAL VALUE = RM115.38
+
+    Then:
+
+    JAWAPAN RINGKAS MUST use EXACTLY the same FINAL VALUE.
+
+    You are NOT allowed to create a new number in JAWAPAN RINGKAS.
+
+    You MUST reuse the FINAL VALUE exactly as written.
+
    IMPORTANT FORMATTING RULES:
    - ALWAYS use exactly these four sections in this order for EVERY response
    - CRITICAL: If your response does not contain [JAWAPAN RINGKAS], [PENERANGAN], [RUJUKAN] and [DISCLAIMER] markers, it is WRONG. Rewrite it with the markers. NO EXCEPTIONS. Even for simple yes/no answers, you MUST use all four sections. Even for greetings or out-of-scope answers, you MUST use all four sections.
