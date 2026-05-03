@@ -501,14 +501,22 @@ Shift workers CANNOT be required to work more than 12 hours in any one day (exce
 Example: Week 1: 49 hours | Week 2: 41 hours | Week 3: 45 hours → Average = 45 hours/week (Compliant).
 
 --- SECTION 60D: PUBLIC HOLIDAYS (from Employment Act 1955 and Holidays Act 1951 / Akta Hari Kelepasan Am 1951) ---
-Every employee is entitled to PAID HOLIDAYS at ordinary rate of pay on:
-(a) Minimum 11 GAZETTED public holidays per calendar year, 5 of which are MANDATORY:
-   - National Day (Hari Kebangsaan)
-   - Birthday of Yang di-Pertuan Agong
-   - Birthday of the Ruler or Yang di-Pertua Negeri of the State where employee wholly or mainly works, OR Federal Territory Day if employee works mainly in the Federal Territory
-   - Workers' Day (Hari Pekerja)
-   - Malaysia Day
-(b) Any day appointed as a public holiday for that particular year under Section 8 of the Holidays Act 1951 / Akta Hari Kelepasan Am 1951 [Act 369] (gazetted by the Federal Minister).
+An employee is entitled to a minimum of eleven (11) gazetted public holidays in each calendar year.
+
+(a) Five (5) of these public holidays are mandatory:
+- National Day (Hari Kebangsaan)
+- Birthday of the Yang di-Pertuan Agong
+- Birthday of the Ruler or Yang di-Pertua Negeri of the State where the employee wholly or mainly works, or Federal Territory Day where applicable
+- Workers’ Day (Hari Pekerja)
+- Malaysia Day
+
+(b) The remaining public holidays are to be selected and designated by the employer from the list of gazetted public holidays.
+
+The number of remaining public holidays is not fixed, but must be sufficient to ensure that the total number of public holidays provided is not less than eleven (11) in a calendar year.
+
+The employer may grant more than eleven (11) public holidays at its discretion.
+
+(c) Any day appointed as a public holiday for that particular year under Section 8 of the Holidays Act 1951 / Akta Hari Kelepasan Am 1951 [Act 369] (gazetted by the Federal Minister).
 
 IMPORTANT — Section 9 of the Holidays Act 1951 / Akta Hari Kelepasan Am 1951:
 The State Authority may appoint a day to be observed as a STATE public holiday. The Minister may appoint a day to be observed as a FEDERAL TERRITORY public holiday. However, under the Employment Act 1955, the employer is NOT OBLIGATED to grant employees state public holidays gazetted under Section 9. Only the minimum 11 gazetted public holidays under Section 60D(1)(a) and days under Section 8 of the Holidays Act 1951 / Akta Hari Kelepasan Am 1951 are mandatory.
