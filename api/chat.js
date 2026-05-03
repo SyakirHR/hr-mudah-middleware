@@ -74,6 +74,28 @@ STRICTLY PROHIBITED:
    - NEVER output <b>...</b> tags around section headers yourself. NEVER output ** markdown for bold. Use ONLY the square-bracket markers listed above. The middleware handles all formatting.
    - Use \n for line breaks between calculation steps or bullet points within a section body. The middleware converts \n to <br>.
    - CALCULATION FORMATTING RULE — STRICTLY ENFORCED: When showing calculation steps OR multiple points of explanation, you MUST put each step or point on its own separate line using \n. NEVER write multiple steps in one continuous paragraph. If your PENERANGAN contains "Step 1" or "Langkah 1", each subsequent step MUST start on a new line. This is NON-NEGOTIABLE.
+     ROUNDING RULE — STRICT:
+      All monetary values MUST be rounded to 2 decimal places at EACH step of calculation.
+      - After division → round to 2 decimal places
+      - After multiplication → round to 2 decimal places
+      - Final answer MUST use the rounded values (not raw values)
+      NEVER mix rounded and unrounded values in the same calculation.
+      STEP GRANULARITY RULE — STRICT:
+      Each calculation step MUST contain ONLY ONE mathematical operation.
+      NEVER combine multiple operations in one step.
+      NO DUPLICATE CALCULATION RULE:
+      You MUST NOT repeat the full calculation again after completing it.
+      Perform calculation ONCE clearly.
+      Internal verification is allowed but MUST NOT be shown.
+      UNIT CONSISTENCY RULE:
+      All monetary values MUST clearly include units:
+      - RMxxx.xx per day
+      - RMxxx.xx per hour
+      - RMxxx.xx total
+      NEVER omit units.
+      NO LOGIC REPETITION RULE:
+      Each calculation or formula must appear ONLY ONCE.
+      Do NOT repeat the same logic in another step or format.
      CORRECT format:
      Langkah 1: Tentukan jumlah upah 12 bulan.
      Langkah 2: Bahagi dengan 365.
@@ -98,11 +120,17 @@ STRICTLY PROHIBITED:
      * Any extra information not asked = REMOVE IT.
      EXCEPTION TO SCOPE RULE: The OFF DAY RULE and OT AMBIGUITY RULE always override the strict scope rule. Always show both scenarios when these rules apply, even if the user appears to have asked only one question.
    - Keep JAWAPAN RINGKAS to 1-2 sentences maximum — direct and to the point
-   - CRITICAL: If your answer involves a calculation, the amount stated in JAWAPAN RINGKAS MUST match the final amount concluded in PENERANGAN. NEVER state a different amount in JAWAPAN RINGKAS from what is calculated in PENERANGAN. If showing two scenarios, state both amounts in JAWAPAN RINGKAS. Before finalizing your response, re-read JAWAPAN RINGKAS and compare the amounts with PENERANGAN — if they differ, rewrite until they match.
+   - CRITICAL: If your answer involves a calculation, the amount stated in JAWAPAN RINGKAS MUST match the final amount concluded in PENERANGAN. NEVER state a different amount in JAWAPAN RINGKAS from what is calculated in PENERANGAN. If showing two scenarios, state both amounts in JAWAPAN RINGKAS. Before finalizing your response, re-read JAWAPAN RINGKAS and compare the amounts with PENERANGAN — if they differ, rewrite until they match. ABSOLUTE OUTPUT RULE: You are NOT allowed to correct your answer after writing JAWAPAN RINGKAS / BRIEF ANSWER. You MUST complete all calculations and verify them BEFORE writing JAWAPAN RINGKAS. Any correction after JAWAPAN RINGKAS is strictly prohibited.
    - NOTA/REDUNDANCY RULE: NEVER add a "Nota:", "Note:", or any additional paragraph after the calculation steps that repeats or summarizes what was already calculated. Do NOT add closing summary paragraphs. The calculation steps in PENERANGAN are sufficient. Any paragraph starting with "Nota:", "Note:", "Namun,", "Oleh itu," after the last calculation step must be REMOVED.
    - PENERANGAN elaborates ONLY on what was asked. Nothing more. Nothing extra.
    - NORMAL HOURS ASSUMPTION RULE: If the user does not state their normal hours of work per day, assume 8 hours/day and disclose this assumption once in PENERANGAN. Example: "Jawapan ini mengandaikan waktu kerja biasa adalah 8 jam sehari." / "This answer assumes normal working hours of 8 hours per day."
    - Before finalizing, internally recompute the result once to confirm accuracy.
+     TOTAL PAY BREAKDOWN RULE:
+     When the question asks for total pay, you MUST show:
+      Basic salary + Overtime pay = Total salary
+
+      Example:
+      Total salary = RM5,000 + RM1,081.80 = RM6,081.80
 
 5. If the answer is not found in the knowledge base, say in the same language as the question that you do not have that information in your database.
 
@@ -1040,3 +1068,11 @@ TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
     return res.status(500).json({ error: 'Ralat sistem. Sila cuba semula.' });
   }
 }
+9.  SEQUENCE ENFORCEMENT RULE:
+    You MUST follow this order:
+    1. Perform all calculations
+    2. Complete PENERANGAN
+    3. Verify internally
+    4. ONLY THEN write JAWAPAN RINGKAS
+
+    JAWAPAN RINGKAS MUST ALWAYS be written LAST.
