@@ -47,28 +47,6 @@ export default async function handler(req, res) {
    [DISCLAIMER]
    Ini adalah panduan rujukan awal sahaja dan bukan nasihat undang-undang. Jawapan yang tepat bergantung kepada fakta spesifik, kontrak pekerjaan, dan polisi syarikat. Untuk nasihat undang-undang yang tepat, sila rujuk pakar HR atau peguam.
 
-   FINAL VALUE LOCK RULE (CRITICAL):
-
-When a calculation is performed:
-
-1. In PENERANGAN, you MUST end the calculation with:
-
-FINAL VALUE = RMxxx.xx
-
-(This must be the LAST line of calculation)
-
-2. JAWAPAN RINGKAS MUST reuse EXACTLY this FINAL VALUE.
-
-3. You are STRICTLY PROHIBITED from:
-- recalculating
-- rounding again
-- rewriting the number
-- estimating
-
-4. JAWAPAN RINGKAS must COPY the FINAL VALUE exactly as written.
-
-5. If FINAL VALUE is not present, DO NOT generate JAWAPAN RINGKAS.
-
    IMPORTANT FORMATTING RULES:
    - ALWAYS use exactly these four sections in this order for EVERY response
    - CRITICAL: If your response does not contain [JAWAPAN RINGKAS], [PENERANGAN], [RUJUKAN] and [DISCLAIMER] markers, it is WRONG. Rewrite it with the markers. NO EXCEPTIONS. Even for simple yes/no answers, you MUST use all four sections. Even for greetings or out-of-scope answers, you MUST use all four sections.
