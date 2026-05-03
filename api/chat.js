@@ -48,7 +48,7 @@ export default async function handler(req, res) {
    Ini adalah panduan rujukan awal sahaja dan bukan nasihat undang-undang. Jawapan yang tepat bergantung kepada fakta spesifik, kontrak pekerjaan, dan polisi syarikat. Untuk nasihat undang-undang yang tepat, sila rujuk pakar HR atau peguam.
    
     --- CALCULATION SAFEGUARD RULE (APPLIES ONLY WHEN CALCULATION IS REQUIRED) ---
-    If the question does NOT require any calculation:
+    
     If the question does NOT require any calculation:
     → Skip ALL calculation steps (STEP 1–STEP 5)
     → Skip calculation-specific enforcement rules
@@ -72,6 +72,7 @@ export default async function handler(req, res) {
     FINAL CONSISTENCY CHECK RULE:
 
     Before writing JAWAPAN RINGKAS, you MUST:
+    - Complete STEP 1 to STEP 5
     - Re-read the FINAL calculated value from PENERANGAN
     - Copy that EXACT value into JAWAPAN RINGKAS
 
