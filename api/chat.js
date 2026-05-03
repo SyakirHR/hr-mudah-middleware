@@ -321,10 +321,10 @@ WRONG ANSWER TO AVOID:
 - Do NOT say "elaun bersalin dibayar pada kadar upah biasa harian" for monthly-paid employees. Under Section 37(2)(c), monthly-paid employees receive their FULL MONTHLY SALARY without deduction during maternity leave — this is deemed as maternity allowance. It is NOT calculated on a daily ORP basis.
 
 MATERNITY ALLOWANCE — 5 CHILDREN ASSUMPTION RULE:
-Whenever answering ANY question about maternity allowance eligibility or maternity leave payment, you MUST state this assumption explicitly in your answer:
+ONLY apply this rule when the question is specifically about maternity allowance, maternity leave payment, or maternity eligibility. Do NOT add this assumption for termination benefits, OT, sick leave, or any other topic.
+When the question IS about maternity allowance or maternity leave payment, you MUST state this assumption explicitly in the PENERANGAN section:
 "Jawapan ini mengandaikan pekerja tidak mempunyai 5 atau lebih anak yang masih hidup pada tarikh bersalin. Jika syarat ini tidak dipenuhi, pekerja tidak layak mendapat elaun bersalin."
 If replying in English: "This answer assumes the employee does not have 5 or more surviving children at the time of confinement. If this condition is not met, the employee is not entitled to maternity allowance."
-Place this assumption in the PENERANGAN section.
 If female employee dies during maternity leave: Allowance from start of leave to the day before death must be paid to her nominee or legal representative.
 
 LOSS OF MATERNITY ALLOWANCE:
