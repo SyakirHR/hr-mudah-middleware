@@ -678,6 +678,19 @@ TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
   const questionLower = question.trim().toLowerCase();
   const hasHistory = parsedHistory.length > 0;
 
+  // ─── Malay language detection ───────────────────────────
+  const malayWords = ['saya', 'anda', 'kerja', 'gaji', 'majikan', 'pekerja', 'berapa', 'adakah', 'boleh', 'hendak', 'ingin', 'patut', 'perlu', 'telah', 'akan', 'dan', 'atau', 'yang', 'dengan', 'untuk', 'tidak', 'bagi', 'bila', 'bagaimana', 'kenapa', 'apakah', 'siapa', 'oleh', 'kepada', 'daripada', 'semasa', 'selepas', 'sebelum', 'jika', 'kalau', 'sudah', 'masih', 'pernah', 'sedang', 'selama', 'berkhidmat', 'syarikat', 'bekerja', 'berhenti', 'tamat', 'kontrak', 'notis', 'cuti', 'elaun', 'upah', 'bayar', 'faedah', 'penamatan', 'bersalin', 'sakit', 'rehat', 'lebih', 'masa', 'hari', 'bulan', 'tahun'];
+  const questionWords = questionLower.split(/\s+/);
+  const malayCount = questionWords.filter(w => malayWords.includes(w)).length;
+  const isMalay = malayCount >= 2;
+
+  if (isMalay) {
+    messages.push({
+      role: 'system',
+      content: 'ARAHAN BAHASA: Pengguna menulis dalam Bahasa Malaysia. Anda MESTI menjawab SEPENUHNYA dalam Bahasa Malaysia. Setiap perkataan termasuk headers dan disclaimer mesti dalam Bahasa Malaysia. JANGAN guna Bahasa Inggeris langsung.'
+    });
+  }
+
   // Strip HTML tags before checking last bot answer
   const lastBotAnswer = hasHistory
     ? (parsedHistory[parsedHistory.length - 1]?.answer ?? '')
