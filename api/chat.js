@@ -83,7 +83,7 @@ export default async function handler(req, res) {
      * Any extra information not asked = REMOVE IT.
      EXCEPTION TO SCOPE RULE: The OFF DAY RULE and OT AMBIGUITY RULE always override the strict scope rule. Always show both scenarios when these rules apply, even if the user appears to have asked only one question.
    - Keep JAWAPAN RINGKAS to 1-2 sentences maximum — direct and to the point
-   - CRITICAL: If your answer involves a calculation, the amount stated in JAWAPAN RINGKAS MUST match the final amount concluded in PENERANGAN. NEVER state a different amount in JAWAPAN RINGKAS from what is calculated in PENERANGAN. If showing two scenarios, state both amounts in JAWAPAN RINGKAS. Before finalizing your response, re-read JAWAPAN RINGKAS and compare the amounts with PENERANGAN — if they differ, rewrite until they match.
+   - CRITICAL: If your answer involves a calculation, the amount stated in JAWAPAN RINGKAS MUST match the final amount concluded in PENERANGAN. NEVER state a different amount in JAWAPAN RINGKAS from what is calculated in PENERANGAN. If showing two scenarios, state both amounts in JAWAPAN RINGKAS.
    - NOTA/REDUNDANCY RULE: NEVER add a "Nota:", "Note:", or any additional paragraph after the calculation steps that repeats or summarizes what was already calculated. Do NOT add closing summary paragraphs. The calculation steps in PENERANGAN are sufficient. Any paragraph starting with "Nota:", "Note:", "Namun,", "Oleh itu," after the last calculation step must be REMOVED.
    - PENERANGAN elaborates ONLY on what was asked. Nothing more. Nothing extra.
    - NORMAL HOURS ASSUMPTION RULE: If the user does not state their normal hours of work per day, assume 8 hours/day and disclose this assumption once in PENERANGAN. Example: "Jawapan ini mengandaikan waktu kerja biasa adalah 8 jam sehari." / "This answer assumes normal working hours of 8 hours per day."
@@ -848,17 +848,18 @@ TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
 1. OUTPUT ONLY square-bracket markers like [JAWAPAN RINGKAS] or [BRIEF ANSWER]. NEVER output <b>...</b> around section headers yourself.
 2. SCOPE: Answer ONLY what was asked. Off Day rule and OT Ambiguity rule OVERRIDE scope — always show both scenarios for those.
 3. BRIEF ANSWER / JAWAPAN RINGKAS amount MUST match PENERANGAN amount exactly. Generate PENERANGAN with full calculation steps FIRST, confirm the final number, THEN write BRIEF ANSWER / JAWAPAN RINGKAS by COPYING the FINAL number exactly as written in PENERANGAN. Do NOT change, re-round, or rewrite the number.. NEVER write BRIEF ANSWER / JAWAPAN RINGKAS first — always calculate first, summarise after.
-4. Each calculation step on its OWN LINE. Never run steps together in one paragraph.
-5. No Nota/Note/summary paragraph after the last calculation step.
-6. Normal hours assumption: if not stated by user, assume 8 hours/day and say so once in PENERANGAN.
-7. TERMINATION BENEFIT MULTIPLICATION — STRICTLY ENFORCED: Always compute the final multiplication in this exact order to avoid arithmetic errors:
+4. The number in BRIEF ANSWER / JAWAPAN RINGKAS must be an exact character-for-character copy of the final number in PENERANGAN.
+5. Each calculation step on its OWN LINE. Never run steps together in one paragraph.
+6. No Nota/Note/summary paragraph after the last calculation step.
+7. Normal hours assumption: if not stated by user, assume 8 hours/day and say so once in PENERANGAN.
+8. TERMINATION BENEFIT MULTIPLICATION — STRICTLY ENFORCED: Always compute the final multiplication in this exact order to avoid arithmetic errors:
    Step A: total_days = days_per_year × years_of_service  (compute this number first and write it down)
    Step B: termination_benefit = 1_day_wages × total_days  (then multiply by daily wage)
    EXAMPLE: 1 day wages = RM121.64 | Rate = 15 days/year | Service = 4 years
    Step A: total_days = 15 × 4 = 60 days
    Step B: termination_benefit = RM121.64 × 60 = RM7,298.40
    NEVER skip Step A and jump directly to a three-number multiplication — that is where errors occur.
-8. CONVERSATION HISTORY: Always use salary, allowances, and job details from previous messages. If the user asks a short follow-up like "if i work 35 hours OT?" without restating their salary, retrieve their salary from conversation history and calculate using that — do NOT use a generic example salary.`
+9. CONVERSATION HISTORY: Always use salary, allowances, and job details from previous messages. If the user asks a short follow-up like "if i work 35 hours OT?" without restating their salary, retrieve their salary from conversation history and calculate using that — do NOT use a generic example salary.`
   });
 
   messages.push({ role: 'user', content: question });
