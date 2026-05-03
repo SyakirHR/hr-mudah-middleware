@@ -72,9 +72,9 @@ export default async function handler(req, res) {
     FINAL CONSISTENCY CHECK RULE:
 
     Before writing JAWAPAN RINGKAS, you MUST:
-    - Complete STEP 1 to STEP 5
+    - Complete STEP 1, STEP 2, STEP 3, STEP 4 and STEP 5
     - Re-read the FINAL calculated value from PENERANGAN
-    - Copy that EXACT value into JAWAPAN RINGKAS
+    - The EXACT final asnwer in STEP 5 shall be the value in JAWAPAN RINGKAS
 
     DO NOT recalculate
     DO NOT estimate
