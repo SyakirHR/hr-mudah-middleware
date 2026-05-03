@@ -56,14 +56,13 @@ export default async function handler(req, res) {
      WRONG format (NEVER do this):
      Langkah 1: Tentukan jumlah upah 12 bulan. Langkah 2: Bahagi dengan 365. Langkah 3: Darabkan dengan kadar hari x tahun perkhidmatan.
    - REFERENCE FORMATTING RULE: When citing a regulation that has both an English and Malay name, use ONLY the name that matches the language of your reply. If replying in Malay → use Malay name only. If replying in English → use English name only. NEVER write both names in the same reference. Example in Malay: "Seksyen 60J, Akta Kerja 1955 dan Peraturan Kerja (Faedah-Faedah Penamatan dan Rentikerja Sementara) 1980, Peraturan 6(2)." Example in English: "Section 60J, Employment Act 1955 and Employment (Termination and Lay-Off Benefits) Regulations 1980, Regulation 6(2)."
-   - CHOICES RULE: When you need clarification from the user, you MUST add a [CHOICES] marker at the very end of your response (after DISCLAIMER) in this exact format:
-     [CHOICES: Option 1 | Option 2 | Option 3]
-     Use this whenever you ask the user to pick between specific options. Examples:
-     * Asking rest day vs off day → [CHOICES: Hari Rehat (Rest Day) | Off Day (Polisi Syarikat)]
-     * Asking years of service → [CHOICES: Kurang 2 tahun | 2-5 tahun | Lebih 5 tahun]
-     * Asking yes/no → [CHOICES: Ya | Tidak]
-     * Asking notice period → [CHOICES: Ada dalam kontrak | Tiada dalam kontrak]
-     Keep each option short (max 5 words). Max 4 options. Only add [CHOICES] when you are asking the user to pick something. Do NOT add [CHOICES] when giving a full answer.
+   - CLARIFICATION REQUIRED RULE: When you genuinely need clarification from the user before you can answer, use this format INSTEAD of the normal 4-section format:
+     [CLARIFICATION REQUIRED]
+     [Ask your clarification question here clearly]
+     [DISCLAIMER]
+     [Standard disclaimer]
+     ONLY use this format when the missing information would completely change the answer and cannot be inferred from history. Do NOT use this for off day questions — handle those with both scenarios instead (see OFF DAY RULE below).
+   - CONVERSATION HISTORY RULE: Always check conversation history before responding. If the user's current message is short (1-5 words) or appears to be a direct answer to a previous clarification question, treat it as a follow-up to the previous question — NOT a new question. Use the context from history to provide the correct answer immediately without asking again.
    - CRITICAL: Write each section marker and its content on the SAME LINE with NO line break, NO blank line, NO space between them. Example: [JAWAPAN RINGKAS]Ya, Hari Pekerja adalah wajib. — the marker and the first word of content must be on the exact same line. NEVER put \n or a blank line between the marker and the content.
    - Do NOT add blank lines or extra spacing between sections. Sections are separated by the middleware automatically.
    - Do NOT wrap the response in any <div> tag. The middleware handles all wrapping.
@@ -87,9 +86,7 @@ export default async function handler(req, res) {
    - User asks "berapa OT saya?" without stating salary or hours worked → Ask for the missing details.
    - User mentions any allowance generically when the type would change the calculation outcome → Ask for the specific type.
    - User says "rest day" or "hari rehat" → This is CLEAR. It is the statutory rest day under Section 59 EA 1955. Proceed immediately to calculate using Section 60 rates. Do NOT ask for clarification.
-   - User says "off day" or "hari tidak bekerja" or any vague non-working day term → ALWAYS ask ONE clarification question. This is because "off day" is commonly misused in Malaysia and could mean either (1) statutory rest day or (2) company off day. The distinction matters for both pay calculation AND public holiday substitution rules. Once user confirms, calculate immediately. NEVER ask the same question twice.
-   - IMPORTANT: If the current user message is a short reply of 1-3 words such as "rest day", "off day", "hari rehat", "hari tidak bekerja", "yes", "no", or any similar short confirmation — ALWAYS check the conversation history first to see what question was previously asked. If the previous bot message was asking for clarification, treat the current short message as the DIRECT ANSWER to that clarification. Do NOT ask for clarification again. Proceed immediately to answer or calculate based on the confirmed information.
-   - NEVER re-ask a clarification question that was already asked in the immediately preceding bot message. If the user has replied — even with just one or two words — accept it as their answer and move forward.
+   - User says "off day" or "hari tidak bekerja" or any vague non-working day term → Do NOT ask for clarification. Instead, explain both possible meanings and provide BOTH scenarios. See OFF DAY RULE in the knowledge base.
    Do NOT ask unnecessary questions if the answer can already be determined from what was provided or from conversation history.
 
 7. LEGAL DEFINITION OF WAGES — Section 2, Employment Act 1955:
@@ -377,10 +374,24 @@ OFF DAY (Hari Tidak Bekerja):
   Hourly rate = RM115.38 / 8 = RM14.42
   Pay = 3 hours x RM14.42 x 1.5 = RM64.89
 
-CLARIFICATION RULE FOR REST DAY / OFF DAY:
-- If user says "rest day" or "hari rehat" → CLEAR. Proceed immediately with Section 60 statutory rest day rates. No clarification needed.
-- If user says "off day", "hari tidak bekerja", "hari cuti", or any vague non-working day → MUST ask clarification first. Do NOT calculate yet.
-- If user already confirmed the type in a previous message → Use that answer immediately. Do NOT ask again.
+OFF DAY RULE — APPLIES TO ALL CONTEXTS (pay, OT, public holiday, substitution, any other):
+When a user mentions "off day", "hari tidak bekerja", "hari cuti", or any vague non-working day term in ANY context, NEVER ask for clarification. Instead, ALWAYS explain both possible meanings and provide the answer for BOTH scenarios. Use this exact approach:
+
+"Jika anda maksudkan 'Off Day' sebagai hari tidak bekerja atas polisi syarikat sahaja (bukan hari rehat statutori di bawah Akta Kerja 1955), maka [answer for company policy off day]"
+
+"Jika anda maksudkan 'Off Day' itu sebenarnya adalah 'Hari Rehat' — iaitu hari rehat mingguan wajib di bawah Seksyen 59 Akta Kerja 1955 — maka [answer for statutory rest day]"
+
+If replying in English:
+"If you mean 'Off Day' as a non-working day based on company policy only (not a statutory rest day under the Employment Act 1955), then [answer for company policy off day]"
+"If you mean 'Off Day' is actually a 'Rest Day' — the mandatory weekly rest day under Section 59 of the Employment Act 1955 — then [answer for statutory rest day]"
+
+This applies to ALL situations involving off day:
+- Pay for working on off day → show both rates
+- OT on off day → show both rates
+- Public holiday falls on off day → show both outcomes (substitution or not)
+- Any other question involving off day → explain both and answer both
+
+If user says "rest day" or "hari rehat" → CLEAR. Proceed immediately with Section 60 statutory rest day rates. No clarification needed. No both-scenarios needed.
 
 --- SECTION 59: REST DAY ---
 Every employee must be given at least ONE full rest day per week. If more than one rest day is given, the LAST rest day is the official rest day for the week.
@@ -422,23 +433,30 @@ When a user says "saya kerja OT X jam pada rest day/public holiday" or "I worked
 - Scenario A: X hours is the TOTAL hours worked on that day
 - Scenario B: X hours is worked AFTER completing normal working hours (true overtime)
 
-Since these give different calculations, ALWAYS show BOTH scenarios in your answer without asking for clarification.
+Since these give different calculations, ALWAYS show BOTH scenarios using this approach (consistent with off day rule):
+
+"Jika anda maksudkan 'OT X jam' sebagai jumlah jam bekerja pada hari tersebut, maka [calculation for total hours]"
+"Jika anda maksudkan 'OT X jam' sebagai kerja selepas waktu biasa (selepas X jam normal), maka [calculation for true OT]"
+
+If replying in English:
+"If you mean 'X hours OT' as the total hours worked on that day, then [calculation for total hours]"
+"If you mean 'X hours OT' as hours worked after completing your normal working hours, then [calculation for true OT]"
 
 FORMAT for both scenarios:
 [JAWAPAN RINGKAS]: State both possible amounts clearly.
-[PENERANGAN]: Show Scenario A calculation first, then Scenario B calculation.
+[PENERANGAN]: Show Scenario A first, then Scenario B.
 
 EXAMPLE — User says "kerja OT 5 jam pada rest day, gaji RM3,000":
 Ordinary rate/day = RM3,000 / 26 = RM115.38
 Hourly rate = RM115.38 / 8 = RM14.42
 
-Scenario A — Jika 5 jam adalah JUMLAH jam bekerja pada hari rehat:
+Jika anda maksudkan 'OT 5 jam' sebagai JUMLAH jam bekerja pada hari rehat:
 5 jam > separuh waktu biasa (4 jam) tetapi < 8 jam → bayaran = 1x ORP = RM115.38
 
-Scenario B — Jika 5 jam adalah kerja SELEPAS waktu biasa (OT sebenar selepas 8 jam):
+Jika anda maksudkan 'OT 5 jam' sebagai kerja SELEPAS waktu biasa (selepas 8 jam normal):
 5 jam OT x RM14.42 x 2 = RM144.20
 
-JAWAPAN RINGKAS should say: "Bergantung kepada maksud 'OT': jika 5 jam adalah jumlah jam bekerja = RM115.38; jika 5 jam adalah OT selepas waktu biasa = RM144.20."
+JAWAPAN RINGKAS should say: "Bergantung kepada maksud 'OT 5 jam': jika ia adalah jumlah jam bekerja = RM115.38; jika ia adalah kerja selepas waktu biasa = RM144.20."
 
 --- SECTION 60A: HOURS OF WORK ---
 An employee shall NOT be required to work:
@@ -479,6 +497,19 @@ The State Authority may appoint a day to be observed as a STATE public holiday. 
 CRITICAL NAMING RULE: The correct Malay name for Holidays Act 1951 is ALWAYS "Akta Hari Kelepasan Am 1951". NEVER use "Akta Cuti Umum 1951" or any other variant. This is a strict rule.
 
 SUBSTITUTION: If a public holiday falls on a rest day OR on another public holiday, the next working day immediately following is a paid holiday in substitution.
+
+CRITICAL — PUBLIC HOLIDAY FALLS ON OFF DAY (BOTH SCENARIOS):
+When user asks what happens if a public holiday falls on their "off day", ALWAYS explain both scenarios:
+
+"Jika anda maksudkan 'Off Day' sebagai 'Hari Rehat' — hari rehat mingguan wajib di bawah Seksyen 59 Akta Kerja 1955 — maka majikan WAJIB memberikan hari ganti (hari bekerja seterusnya) sebagai cuti berbayar sebagai pengganti."
+
+"Jika anda maksudkan 'Off Day' sebagai hari tidak bekerja atas polisi syarikat sahaja (bukan hari rehat statutori), maka Akta Kerja 1955 TIDAK mewajibkan hari ganti. Tiada hak penggantian di bawah Akta untuk off day syarikat."
+
+If replying in English:
+"If your 'Off Day' is actually a statutory Rest Day under Section 59 of the Employment Act 1955, then the employer MUST give a substitution day (the next working day) as a paid holiday."
+"If your 'Off Day' is a non-working day based on company policy only (not a statutory rest day), then the Employment Act 1955 does NOT require a substitution day. There is no substitution right under the Act for company off days."
+
+
 NOTICE: Employer must display conspicuously at workplace before each calendar year a notice specifying the remaining 6 gazetted public holidays. These 6 may be substituted on other days by agreement between employer and employee.
 DURING LEAVE: If a public holiday falls during annual leave, sick leave, or temporary disablement, employer must grant another day as paid holiday in substitution.
 UNAUTHORISED ABSENCE: If employee is absent without prior consent on the working day immediately before OR after a public holiday (or consecutive public holidays), employee forfeits holiday pay — unless employee has a reasonable excuse.
@@ -731,14 +762,10 @@ TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
   });
 
   // ─── Smart injection logic ─────────────────────────────
-  const questionLower = question.trim().toLowerCase();
-  const hasHistory = parsedHistory.length > 0;
-
-  // ─── Malay language detection ───────────────────────────
   const malayWords = ['saya', 'anda', 'kerja', 'gaji', 'majikan', 'pekerja', 'berapa', 'adakah', 'boleh', 'hendak', 'ingin', 'patut', 'perlu', 'telah', 'akan', 'dan', 'atau', 'yang', 'dengan', 'untuk', 'tidak', 'bagi', 'bila', 'bagaimana', 'kenapa', 'apakah', 'siapa', 'oleh', 'kepada', 'daripada', 'semasa', 'selepas', 'sebelum', 'jika', 'kalau', 'sudah', 'masih', 'pernah', 'sedang', 'selama', 'berkhidmat', 'syarikat', 'bekerja', 'berhenti', 'tamat', 'kontrak', 'notis', 'cuti', 'elaun', 'upah', 'bayar', 'faedah', 'penamatan', 'bersalin', 'sakit', 'rehat', 'lebih', 'masa', 'hari', 'bulan', 'tahun'];
-  const questionWords = questionLower.split(/\s+/);
+  const questionWords = question.trim().toLowerCase().split(/\s+/);
   const malayCount = questionWords.filter(w => malayWords.includes(w)).length;
-  const isMalay = malayCount >= 2;
+  const isMalay = questionWords.length <= 3 ? malayCount >= 1 : malayCount >= 2;
 
   if (isMalay) {
     messages.push({
@@ -752,63 +779,13 @@ TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
     });
   }
 
-  // Strip HTML tags before checking last bot answer
-  const lastBotAnswer = hasHistory
-    ? (parsedHistory[parsedHistory.length - 1]?.answer ?? '')
-        .replace(/<[^>]*>/g, '')
-        .toLowerCase()
-    : '';
-
-  // Reliable detection — bot just asked rest day vs off day clarification
-  const botJustAskedClarification =
-    lastBotAnswer.includes('hari rehat') &&
-    lastBotAnswer.includes('off day');
-
-  const mentionsOffDay = ['off day', 'offday', 'hari tidak bekerja', 'hari cuti'].some(k => questionLower.includes(k));
-  const mentionsRestDay = ['rest day', 'restday', 'hari rehat'].some(k => questionLower.includes(k));
-
-  if (botJustAskedClarification) {
-    const dayType = mentionsRestDay ? 'REST DAY (statutory rest day under Section 59, use Section 60 pay rates)'
-                  : mentionsOffDay  ? 'OFF DAY (company policy day, use 1.5x hourly rate OT calculation)'
-                  : 'the day type the user just confirmed';
-
-    const originalQuestion = parsedHistory.length > 0 ? parsedHistory[0].question : '';
-
-    messages.push({
-      role: 'system',
-      content: `IMPORTANT: The user message "${question.trim()}" is NOT a new question. It is their answer to your clarification. The original question was: "${originalQuestion}". The confirmed day type is: ${dayType}. Now answer the original question directly using the confirmed day type. Do NOT define rest day or off day. Do NOT ask again. Answer immediately.`
-    });
-
-  } else if (mentionsOffDay && !hasHistory) {
-    messages.push({
-      role: 'system',
-      content: 'Perkataan "off day" yang digunakan oleh pengguna adalah tidak jelas — ia boleh bermaksud Hari Rehat (Seksyen 59) atau hari tidak bekerja atas polisi syarikat. Tanya soalan pengesahan ini sebelum menjawab: "Boleh sahkan — adakah yang anda maksudkan itu (1) Hari Rehat di bawah Seksyen 59 Akta Kerja 1955, atau (2) Off Day atas polisi syarikat sahaja?" Letakkan soalan ini dalam [JAWAPAN RINGKAS]. Tambah [CHOICES: Hari Rehat (Seksyen 59) | Off Day (Polisi Syarikat)] selepas [DISCLAIMER]. Jangan jawab soalan asal lagi.'
-    });
-
-  } else if (mentionsOffDay && hasHistory && !botJustAskedClarification) {
-    const offDayAlreadyConfirmed = parsedHistory.some(p =>
-      (p.question || '').toLowerCase().includes('rest day') ||
-      (p.question || '').toLowerCase().includes('hari rehat') ||
-      (p.answer || '').replace(/<[^>]*>/g, '').toLowerCase().includes('off day (1.5x') ||
-      (p.answer || '').replace(/<[^>]*>/g, '').toLowerCase().includes('rest day (section 60')
-    );
-    if (!offDayAlreadyConfirmed) {
-      messages.push({
-        role: 'system',
-        content: 'Perkataan "off day" yang digunakan oleh pengguna adalah tidak jelas — ia boleh bermaksud Hari Rehat (Seksyen 59) atau hari tidak bekerja atas polisi syarikat. Tanya soalan pengesahan ini sebelum menjawab: "Boleh sahkan — adakah yang anda maksudkan itu (1) Hari Rehat di bawah Seksyen 59 Akta Kerja 1955, atau (2) Off Day atas polisi syarikat sahaja?" Letakkan soalan ini dalam [JAWAPAN RINGKAS]. Tambah [CHOICES: Hari Rehat (Seksyen 59) | Off Day (Polisi Syarikat)] selepas [DISCLAIMER]. Jangan jawab soalan asal lagi.'
-      });
-    }
-  }
-
-  // If bot just asked clarification, send original question instead of the choice text
-  if (botJustAskedClarification && parsedHistory.length > 0) {
-    messages.push({ role: 'user', content: parsedHistory[0].question });
-  } else {
-    messages.push({ role: 'user', content: question });
-  }
+  // Send user question directly — AI handles context via conversation history
+  messages.push({ role: 'user', content: question });
 
   // ─── OpenAI call ─────────────────────────────────────
   try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 25000);
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -818,18 +795,21 @@ TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
       body: JSON.stringify({
         model: 'gpt-4.1-mini',
         messages,
-        max_tokens: 1000,
+        max_tokens: 2000,
         temperature: 0.1
-      })
+      }),
+      signal: controller.signal
     });
+    clearTimeout(timeout);
 
     const data = await response.json();
     if (!response.ok) return res.status(500).json({ error: data.error?.message || 'OpenAI error' });
 
-    const rawAnswer = data.choices[0].message.content;
+    const rawAnswer = data.choices?.[0]?.message?.content;
+    if (!rawAnswer) return res.status(500).json({ error: 'No response received from AI. Please try again.' });
 
     // ─── Convert to HTML ────────────────────────────────
-    const headerStyle = 'display:block;font-weight:bold;margin:12px 0 4px 0;padding:0;line-height:1.5;';
+    const headerStyle = 'display:block;font-weight:bold;margin:0;padding:0;line-height:1.5;';
 
     let htmlAnswer = rawAnswer
       .replace(/\[JAWAPAN RINGKAS\]\n*/g, '[JAWAPAN RINGKAS]')
@@ -838,16 +818,18 @@ TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
       .replace(/\[DISCLAIMER\]\n*/g, '[DISCLAIMER]')
       .replace(/\[BRIEF ANSWER\]\n*/g, '[BRIEF ANSWER]')
       .replace(/\[EXPLANATION\]\n*/g, '[EXPLANATION]')
-      .replace(/\[REFERENCE\]\n*/g, '[REFERENCE]');
+      .replace(/\[REFERENCE\]\n*/g, '[REFERENCE]')
+      .replace(/\[CLARIFICATION REQUIRED\]\n*/g, '[CLARIFICATION REQUIRED]');
 
     htmlAnswer = htmlAnswer
-      .replace(/\[JAWAPAN RINGKAS\]/g, `<b style="${headerStyle}">JAWAPAN RINGKAS</b>`)
-      .replace(/\[PENERANGAN\]/g,      `<b style="${headerStyle}">PENERANGAN</b>`)
-      .replace(/\[RUJUKAN\]/g,         `<b style="${headerStyle}">RUJUKAN</b>`)
-      .replace(/\[DISCLAIMER\]/g,      `<b style="${headerStyle}">DISCLAIMER</b>`)
-      .replace(/\[BRIEF ANSWER\]/g,    `<b style="${headerStyle}">BRIEF ANSWER</b>`)
-      .replace(/\[EXPLANATION\]/g,     `<b style="${headerStyle}">EXPLANATION</b>`)
-      .replace(/\[REFERENCE\]/g,       `<b style="${headerStyle}">REFERENCE</b>`);
+      .replace(/\[JAWAPAN RINGKAS\]/g,        `<b style="${headerStyle}">JAWAPAN RINGKAS</b>`)
+      .replace(/\[PENERANGAN\]/g,             `<b style="${headerStyle}">PENERANGAN</b>`)
+      .replace(/\[RUJUKAN\]/g,                `<b style="${headerStyle}">RUJUKAN</b>`)
+      .replace(/\[DISCLAIMER\]/g,             `<b style="${headerStyle}">DISCLAIMER</b>`)
+      .replace(/\[BRIEF ANSWER\]/g,           `<b style="${headerStyle}">BRIEF ANSWER</b>`)
+      .replace(/\[EXPLANATION\]/g,            `<b style="${headerStyle}">EXPLANATION</b>`)
+      .replace(/\[REFERENCE\]/g,              `<b style="${headerStyle}">REFERENCE</b>`)
+      .replace(/\[CLARIFICATION REQUIRED\]/g, `<b style="${headerStyle}">CLARIFICATION REQUIRED</b>`);
 
     // Convert newlines to <br>, then ensure headers always have exactly one <br> after them
     htmlAnswer = htmlAnswer.replace(/\n/g, '<br>');
@@ -865,20 +847,12 @@ TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
 
     const answer = `<div style="font-family: Poppins, sans-serif; font-size: 12px; line-height: 1.5; margin:0; padding:0;">${htmlAnswer}</div>`;
 
-    // ─── Extract choices ──────────────────────────────
-    const choicesMatch = answer.match(/\[CHOICES:\s*([^\]]+)\]/);
-    let choicesString = '';
-    let cleanAnswer = answer;
-
-    if (choicesMatch) {
-      const choicesArray = choicesMatch[1].split('|').map(s => s.trim()).filter(Boolean);
-      choicesString = choicesArray.join(' | ');
-      cleanAnswer = answer.replace(/\[CHOICES:\s*[^\]]+\]/, '').replace(/(<br>\s*){2,}$/, '').trim();
-    }
-
-    return res.status(200).json({ answer: cleanAnswer, choices: choicesString });
+    return res.status(200).json({ answer, choices: '' });
 
   } catch (err) {
+    if (err.name === 'AbortError') {
+      return res.status(504).json({ error: 'Request timed out. Please try again.' });
+    }
     return res.status(500).json({ error: err.message });
   }
 }
