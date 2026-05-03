@@ -849,12 +849,13 @@ TOTAL: RM1,600 + RM200 + RM1,089.17 = RM2,889.17`;
       .replace(/\[EXPLANATION\]/g,     `<b style="${headerStyle}">EXPLANATION</b>`)
       .replace(/\[REFERENCE\]/g,       `<b style="${headerStyle}">REFERENCE</b>`);
 
-    // Convert newlines to <br>, then ensure headers always have a <br> after them
+    // Convert newlines to <br>, then ensure headers always have exactly one <br> after them
     htmlAnswer = htmlAnswer.replace(/\n/g, '<br>');
-    // Remove extra <br> tags right after </b> first
-    htmlAnswer = htmlAnswer.replace(/<\/b>(<br>)*/g, '</b>');
-    // Then add exactly one <br> after </b> when followed directly by text (not already a <br>)
-    htmlAnswer = htmlAnswer.replace(/<\/b>(?!<br>)/g, '</b><br>');
+    // Remove ALL <br> tags right after </b> first (clean slate)
+    htmlAnswer = htmlAnswer.replace(/<\/b>(<br>)+/g, '</b>');
+    // Then add exactly ONE <br> after every </b>
+    htmlAnswer = htmlAnswer.replace(/<\/b>/g, '</b><br>');
+    // Collapse any triple or more <br> to double
     htmlAnswer = htmlAnswer.replace(/(<br>){3,}/g, '<br><br>');
 
     if (!htmlAnswer.trim()) { htmlAnswer = rawAnswer.replace(/\n/g, '<br>'); }
